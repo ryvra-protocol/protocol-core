@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "Ryvra Protocol Core: docs-and-interfaces-first baseline.",
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.16.0",
   "scripts": {
     "lint": "markdownlint-cli2 \"README.md\" \"CONTRIBUTING.md\" \"SECURITY.md\" \"docs/**/*.md\"",
     "format": "prettier --check .",
