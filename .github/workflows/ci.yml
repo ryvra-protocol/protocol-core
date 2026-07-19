@@ -23,7 +23,7 @@ jobs:
           node-version: 20
           cache: pnpm
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Lint markdown
         run: pnpm lint
       - name: Verify required docs
@@ -50,6 +50,6 @@ jobs:
           node-version: 20
           cache: pnpm
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Run typecheck
         run: pnpm typecheck
