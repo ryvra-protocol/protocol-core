@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    name: Markdown and docs checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Lint markdown
+        run: pnpm lint
+      - name: Verify required docs
+        run: |
+          test -f README.md
+          test -f docs/rfc-0001-aa-unified-assets.md
+          test -f docs/tokenomics-proof-of-transaction.md
+          test -f docs/tokenomics-faq.md
+          test -f docs/brand-narrative.md
+          test -f CONTRIBUTING.md
+          test -f SECURITY.md
+
+  typecheck:
+    name: Typecheck (placeholder)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Run typecheck
+        run: pnpm typecheck
