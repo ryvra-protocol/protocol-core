@@ -7,7 +7,7 @@ const CONTRIBUTION_WEIGHT = 1; // TBD by governance/policy
 export const emitContribution = (context: SandboxContext, tx: LedgerTransaction): ContributionEvent => {
   const amount_minor = tx.postings[0].amount_minor;
   const contribution: ContributionEvent = {
-    contribution_id: context.nextEventId(),
+    ledger_event_id: context.nextEventId(),
     account_id: tx.postings[1].account_id,
     reference_id: tx.reference_id,
     asset_id: tx.postings[1].asset_id,
