@@ -1,5 +1,6 @@
 import {
   PolicyDecision,
+  validatePolicyDecisionOutput,
   type PolicyDecisionInput,
   type PolicyDecisionOutput,
   asPolicyVersion
@@ -36,6 +37,10 @@ export const evaluatePolicy = (
     policy_version: ACTIVE_POLICY_VERSION,
     evaluated_at: context.now()
   };
+
+  if (!validatePolicyDecisionOutput(output)) {
+    throw new Error("Policy decision output must include canonical reason codes and non-empty DENY reason_codes.");
+  }
 
   context.decisionsByReference.set(input.reference_id, output);
 

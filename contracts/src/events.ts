@@ -1,7 +1,7 @@
 import type { AccountId, AssetId, CorrelationId, LedgerEventId, ReferenceId } from "./ids.js";
 
 export interface ContributionEvent {
-  contribution_id: LedgerEventId;
+  ledger_event_id: LedgerEventId;
   account_id: AccountId;
   reference_id: ReferenceId;
   asset_id: AssetId;

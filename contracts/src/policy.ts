@@ -1,7 +1,7 @@
 import type { AccountId, AssetId, PolicyVersion, ReferenceId } from "./ids.js";
 import { PolicyDecision } from "./enums.js";
 
-const REASON_CODE_PREFIXES = [
+export const POLICY_REASON_CODE_PREFIXES = [
   "LIMIT_EXCEEDED_",
   "VELOCITY_EXCEEDED_",
   "JURISDICTION_RESTRICTED_",
@@ -11,7 +11,7 @@ const REASON_CODE_PREFIXES = [
   "ASSET_RESTRICTED_"
 ] as const;
 
-export type PolicyReasonCodePrefix = (typeof REASON_CODE_PREFIXES)[number];
+export type PolicyReasonCodePrefix = (typeof POLICY_REASON_CODE_PREFIXES)[number];
 
 export type PolicyReasonCode =
   | `LIMIT_EXCEEDED_${string}`
@@ -39,13 +39,28 @@ export interface PolicyDecisionOutput {
 }
 
 export const isPolicyReasonCode = (value: string): value is PolicyReasonCode =>
-  REASON_CODE_PREFIXES.some((prefix) => value.startsWith(prefix));
+  POLICY_REASON_CODE_PREFIXES.some((prefix) => value.startsWith(prefix));
 
 export const validatePolicyReasonCodes = (codes: readonly string[]): codes is PolicyReasonCode[] =>
   codes.length > 0 && codes.every((code) => isPolicyReasonCode(code));
 
+export const validatePolicyDecisionOutput = (output: {
+  decision: PolicyDecision;
+  reason_codes: readonly string[];
+}): output is { decision: PolicyDecision; reason_codes: PolicyReasonCode[] } => {
+  if (!output.reason_codes.every((code) => isPolicyReasonCode(code))) {
+    return false;
+  }
+
+  if (output.decision === PolicyDecision.DENY) {
+    return output.reason_codes.length > 0;
+  }
+
+  return true;
+};
+
 export const categorizePolicyReasonCode = (code: PolicyReasonCode): PolicyReasonCodePrefix => {
-  const prefix = REASON_CODE_PREFIXES.find((candidate) => code.startsWith(candidate));
+  const prefix = POLICY_REASON_CODE_PREFIXES.find((candidate) => code.startsWith(candidate));
   if (!prefix) {
     throw new Error(`Unknown policy reason code: ${code}`);
   }
