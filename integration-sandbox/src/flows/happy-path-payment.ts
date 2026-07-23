@@ -2,7 +2,6 @@ import {
   PaymentIntentState,
   PolicyDecision,
   SettlementState,
-  asPolicyVersion,
   type PaymentIntent
 } from "@ryvra/contracts";
 
@@ -52,7 +51,6 @@ export const runHappyPathPayment = (input: HappyPathInput): { context: SandboxCo
     asset_id: intent.asset_id,
     amount_minor: intent.amount_minor,
     reference_id: intent.reference_id,
-    policy_version: asPolicyVersion("unused"),
     risk_score: input.risk_score
   });
   emitEvent(context, intent.reference_id, correlation_id, "policy.decision", { decision });

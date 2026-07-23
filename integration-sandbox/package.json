@@ -13,8 +13,8 @@
     "@ryvra/contracts": "workspace:*"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "pnpm --filter @ryvra/contracts run build && tsc -p tsconfig.json",
+    "typecheck": "pnpm --filter @ryvra/contracts run build && tsc --noEmit -p tsconfig.json",
     "test": "pnpm run build && node --test dist/test/*.spec.js"
   }
 }
