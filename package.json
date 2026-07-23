@@ -7,8 +7,9 @@
   "scripts": {
     "lint": "markdownlint-cli2 \"README.md\" \"CONTRIBUTING.md\" \"SECURITY.md\" \"docs/**/*.md\"",
     "format": "prettier --check .",
-    "check": "pnpm lint && pnpm typecheck",
-    "typecheck": "if find apps packages -type f \\( -name '*.ts' -o -name '*.tsx' \\) | grep -q .; then tsc --noEmit -p tsconfig.base.json; else echo \"No TypeScript sources yet (placeholder).\"; fi"
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "typecheck": "pnpm --filter ./contracts run typecheck && pnpm --filter ./integration-sandbox run typecheck",
+    "test": "pnpm --filter ./contracts run test && pnpm --filter ./integration-sandbox run test"
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.14.0",

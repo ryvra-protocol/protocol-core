@@ -1,3 +1,5 @@
 packages:
+  - "contracts"
+  - "integration-sandbox"
   - "apps/*"
   - "packages/*"
