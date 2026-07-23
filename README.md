@@ -41,6 +41,9 @@ Ryvra Protocol Core is planned around four cooperating layers:
 - [`docs/tokenomics-proof-of-transaction.md`](./docs/tokenomics-proof-of-transaction.md) — pre-TGE PoT points framework (draft)
 - [`docs/tokenomics-faq.md`](./docs/tokenomics-faq.md) — concise tokenomics FAQ (draft)
 - [`docs/brand-narrative.md`](./docs/brand-narrative.md) — brand narrative and positioning
+- [`contracts`](./contracts) — canonical cross-repo contract types and state vocabularies
+- [`integration-sandbox`](./integration-sandbox) — deterministic mock-driven E2E flows
+- [`docs/integration-sandbox-e2e.md`](./docs/integration-sandbox-e2e.md) — happy path, denied path, idempotency, and reconciliation baseline
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) — contribution standards and RFC-first changes
 - [`SECURITY.md`](./SECURITY.md) — responsible disclosure process
 
