@@ -20,12 +20,15 @@ test("idempotent replay does not duplicate postings and emits duplicate reason c
 
   runHappyPathPayment(input);
   const beforeLedgerCount = context.ledgerByReference.size;
+  const beforeContributionCount = context.contributionsByReference.size;
 
   const replay = runIdempotentRetry(context, input);
 
   assert.equal(replay.result.duplicate_detected, true);
   assert.equal(context.ledgerByReference.size, beforeLedgerCount);
+  assert.equal(context.contributionsByReference.size, beforeContributionCount);
   const duplicateEvent = context.events.find((event) => event.event_type === "idempotency.duplicate_detected");
   assert.ok(duplicateEvent);
   assert.deepEqual((duplicateEvent!.payload as { reason_codes: string[] }).reason_codes, ["DUPLICATE_REFERENCE_REPLAY"]);
+  assert.equal("contribution_id" in (duplicateEvent!.payload as Record<string, unknown>), false);
 });
