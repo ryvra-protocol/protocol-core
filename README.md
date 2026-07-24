@@ -1,6 +1,7 @@
 # Ryvra Protocol Core
 
 **Status:** early draft
+**Verification:** canonical alignment verification completed against `v0.2.1-contract-hardening`.
 
 Ryvra Protocol Core is the foundational specification surface for a protocol that combines:
 
