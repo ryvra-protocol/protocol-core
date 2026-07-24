@@ -7,7 +7,7 @@
 3. Evaluate policy and receive `ALLOW`.
 4. Create balanced double-entry ledger transaction (`sum(debit) == sum(credit)`).
 5. Transition settlement to `finalized`, then `reconciled`.
-6. Emit PoT `ContributionEvent`.
+6. Emit PoT `ContributionEvent` with canonical `ledger_event_id`.
 7. Persist ordered event envelope log with deterministic timestamps.
 
 ## Denied path sequence

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { PolicyDecision, SettlementState } from "@ryvra/contracts";
+import { CANONICAL_EVENT_ENVELOPE_FIELDS, PolicyDecision, SettlementState } from "@ryvra/contracts";
 
 import { asset, createSandboxContext, idempotency, reference, account } from "../src/context.js";
 import { hasDoubleEntryBalance } from "../src/mocks/ledger-settlement.mock.js";
@@ -24,6 +24,8 @@ test("happy path reaches finalized/reconciled and emits PoT contribution", () =>
   assert.equal(result.settlement_state, SettlementState.reconciled);
   assert.ok(result.contribution_event);
   assert.ok(result.ledger_transaction);
+  assert.ok(result.contribution_event!.ledger_event_id);
+  assert.equal("contribution_id" in result.contribution_event!, false);
   assert.equal(hasDoubleEntryBalance(result.ledger_transaction!), true);
 
   const eventTypes = updated.events.map((event) => event.event_type);
@@ -35,4 +37,8 @@ test("happy path reaches finalized/reconciled and emits PoT contribution", () =>
     "settlement.reconciled",
     "pot.contribution_emitted"
   ]);
+
+  const contributionEnvelope = updated.events.find((event) => event.event_type === "pot.contribution_emitted");
+  assert.ok(contributionEnvelope);
+  assert.deepEqual(Object.keys(contributionEnvelope!), [...CANONICAL_EVENT_ENVELOPE_FIELDS]);
 });

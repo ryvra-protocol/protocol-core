@@ -5,6 +5,8 @@ import {
   CANONICAL_EVENT_ENVELOPE_FIELDS,
   CANONICAL_ID_FIELDS,
   CONTRACT_SCHEMA_VERSION,
+  OrderMarketState,
+  PaymentIntentState,
   POLICY_REASON_CODES_VERSION,
   PolicyDecision,
   SettlementState,
@@ -35,6 +37,26 @@ test("contracts compile and expose canonical vocabulary", () => {
     "payload"
   ]);
   assert.equal(PolicyDecision.ALLOW, "ALLOW");
+  assert.deepEqual(Object.values(PaymentIntentState), [
+    "created",
+    "authorized",
+    "executing",
+    "settled",
+    "failed",
+    "reversed"
+  ]);
+  assert.deepEqual(Object.values(SettlementState), ["accepted", "executed", "finalized", "reconciled", "failed"]);
+  assert.deepEqual(Object.values(OrderMarketState), [
+    "created",
+    "validated",
+    "routed",
+    "partially_filled",
+    "filled",
+    "canceled",
+    "expired",
+    "failed",
+    "settled"
+  ]);
   assert.equal(SettlementState.reconciled, "reconciled");
   assert.equal(validatePolicyReasonCodes(["DUPLICATE_REFERENCE_REPLAY"]), true);
   assert.equal(categorizePolicyReasonCode("DUPLICATE_REFERENCE_REPLAY"), "DUPLICATE_REFERENCE_");
