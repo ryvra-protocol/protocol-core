@@ -21,6 +21,12 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
+  adapters/policy-risk:
+    dependencies:
+      '@ryvra/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
+
   contracts: {}
 
   integration-sandbox:
@@ -28,6 +34,9 @@ importers:
       '@ryvra/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@ryvra/policy-risk-adapter':
+        specifier: workspace:*
+        version: link:../adapters/policy-risk
 
 packages:
 
