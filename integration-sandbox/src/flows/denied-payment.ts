@@ -2,8 +2,8 @@ import { PolicyDecision, SettlementState } from "@ryvra/contracts";
 
 import { runHappyPathPayment, type HappyPathInput } from "./happy-path-payment.js";
 
-export const runDeniedPathPayment = (input: HappyPathInput) => {
-  const output = runHappyPathPayment(input);
+export const runDeniedPathPayment = async (input: HappyPathInput) => {
+  const output = await runHappyPathPayment(input);
   if (output.result.decision.decision !== PolicyDecision.DENY) {
     throw new Error("Denied path expected a DENY policy decision.");
   }

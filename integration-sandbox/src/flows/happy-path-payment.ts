@@ -9,7 +9,6 @@ import { createSandboxContext, makeReplayKey, type SandboxContext } from "../con
 import { emitEvent } from "../logging/event-log.js";
 import { createAccount } from "../mocks/accounts.mock.js";
 import { createBalancedTransaction, hasDoubleEntryBalance, transitionSettlement } from "../mocks/ledger-settlement.mock.js";
-import { evaluatePolicy } from "../mocks/policy-risk.mock.js";
 import { emitContribution } from "../mocks/pot-engine.mock.js";
 import type { PaymentFlowResult } from "../types.js";
 
@@ -24,7 +23,7 @@ export interface HappyPathInput {
   risk_score: number;
 }
 
-export const runHappyPathPayment = (input: HappyPathInput): { context: SandboxContext; result: PaymentFlowResult } => {
+export const runHappyPathPayment = async (input: HappyPathInput): Promise<{ context: SandboxContext; result: PaymentFlowResult }> => {
   const context = input.context ?? createSandboxContext();
   createAccount(context, input.payer);
   createAccount(context, input.payee);
@@ -46,13 +45,25 @@ export const runHappyPathPayment = (input: HappyPathInput): { context: SandboxCo
   context.intentsByReplayKey.set(replayKey, intent);
   emitEvent(context, intent.reference_id, correlation_id, "payment_intent.created", { intent });
 
-  const decision = evaluatePolicy(context, {
-    account_id: intent.account_id,
-    asset_id: intent.asset_id,
-    amount_minor: intent.amount_minor,
-    reference_id: intent.reference_id,
-    risk_score: input.risk_score
-  });
+  const decision = await context.policyRiskAdapter.evaluate(
+    {
+      account_id: intent.account_id,
+      asset_id: intent.asset_id,
+      amount_minor: intent.amount_minor,
+      reference_id: intent.reference_id,
+      idempotency_key: intent.idempotency_key,
+      correlation_id,
+      policy_version: context.policyRiskVersion,
+      jurisdiction: context.accounts.get(intent.account_id)?.jurisdiction,
+      risk_score: input.risk_score
+    },
+    {
+      now: context.now,
+      isAssetRestricted: (assetId) => context.assetRestrictions.get(assetId) === true
+    }
+  );
+
+  context.decisionsByReference.set(intent.reference_id, decision);
   emitEvent(context, intent.reference_id, correlation_id, "policy.decision", { decision });
 
   if (decision.decision !== PolicyDecision.ALLOW) {

@@ -10,11 +10,12 @@
     "dist"
   ],
   "dependencies": {
-    "@ryvra/contracts": "workspace:*"
+    "@ryvra/contracts": "workspace:*",
+    "@ryvra/policy-risk-adapter": "workspace:*"
   },
   "scripts": {
-    "build": "pnpm --filter @ryvra/contracts run build && tsc -p tsconfig.json",
-    "typecheck": "pnpm --filter @ryvra/contracts run build && tsc --noEmit -p tsconfig.json",
+    "build": "pnpm --filter @ryvra/contracts run build && pnpm --filter @ryvra/policy-risk-adapter run build && tsc -p tsconfig.json",
+    "typecheck": "pnpm --filter @ryvra/contracts run build && pnpm --filter @ryvra/policy-risk-adapter run build && tsc --noEmit -p tsconfig.json",
     "test": "pnpm run build && node --test dist/test/*.spec.js"
   }
 }

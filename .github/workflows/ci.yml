@@ -55,6 +55,25 @@ jobs:
       - name: Test contracts
         run: pnpm --filter ./contracts run test
 
+  policy-risk-adapter:
+    name: Policy-risk adapter typecheck and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.16.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck policy-risk adapter
+        run: pnpm --filter ./adapters/policy-risk run typecheck
+      - name: Test policy-risk adapter
+        run: pnpm --filter ./adapters/policy-risk run test
+
   integration-sandbox:
     name: Integration sandbox typecheck and test
     runs-on: ubuntu-latest

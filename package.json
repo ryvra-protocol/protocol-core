@@ -8,8 +8,8 @@
     "lint": "markdownlint-cli2 \"README.md\" \"CONTRIBUTING.md\" \"SECURITY.md\" \"docs/**/*.md\"",
     "format": "prettier --check .",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
-    "typecheck": "pnpm --filter ./contracts run typecheck && pnpm --filter ./integration-sandbox run typecheck",
-    "test": "pnpm --filter ./contracts run test && pnpm --filter ./integration-sandbox run test"
+    "typecheck": "pnpm --filter ./contracts run typecheck && pnpm --filter ./adapters/policy-risk run typecheck && pnpm --filter ./integration-sandbox run typecheck",
+    "test": "pnpm --filter ./contracts run test && pnpm --filter ./adapters/policy-risk run test && pnpm --filter ./integration-sandbox run test"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",

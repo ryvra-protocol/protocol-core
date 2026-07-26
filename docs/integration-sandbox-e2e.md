@@ -4,7 +4,7 @@
 
 1. Create account records for payer/payee in sandbox context.
 2. Create payment intent with deterministic `reference_id`, `idempotency_key`, and `correlation_id`.
-3. Evaluate policy and receive `ALLOW`.
+3. Evaluate policy through `PolicyRiskAdapter.evaluate(...)` and receive `ALLOW`.
 4. Create balanced double-entry ledger transaction (`sum(debit) == sum(credit)`).
 5. Transition settlement to `finalized`, then `reconciled`.
 6. Emit PoT `ContributionEvent` with canonical `ledger_event_id`.
@@ -13,7 +13,7 @@
 ## Denied path sequence
 
 1. Create payment intent.
-2. Evaluate policy and receive `DENY`.
+2. Evaluate policy through `PolicyRiskAdapter.evaluate(...)` and receive `DENY`.
 3. Include non-empty machine-readable `reason_codes`.
 4. Record denial event for audit trail.
 5. Do not create finalized settlement posting.
@@ -44,10 +44,14 @@
 - Idempotent replay: pass (same `reference_id + idempotency_key` avoids duplicate side effects/postings and emits duplicate audit reason code in `DUPLICATE_REFERENCE_*` family).
 - Reconciliation report: pass (deterministic structure and counts for `total_intents`, `allowed_count`, `denied_count`, `finalized_count`, `reconciled_count`, `failed_transitions_count`, `duplicate_attempt_count`, `unreconciled_items[]`).
 
+## Adapter boundary note
+
+Policy-risk decisions now route through a real adapter boundary in sandbox flows.
+Deterministic mode remains the default in CI and tests to preserve deterministic coverage.
+
 ## Known limitations and next steps
 
-- Mocks only; real adapters pending integration.
-- Policy thresholds and PoT contribution weights are `TBD by governance/policy`.
+- Policy-risk deterministic thresholds and PoT contribution weights are `TBD by governance/policy`.
 - No external settlement/ledger provider connectivity in this baseline.
 - Broaden scenario matrix for market flows, reversals, and partial failures in subsequent iterations.
-- Expand real adapter integration coverage across accounts, asset-registry, ledger-settlement, policy-risk, pay, and markets.
+- Expand real adapter integration coverage across accounts, asset-registry, ledger-settlement, pay, and markets.
