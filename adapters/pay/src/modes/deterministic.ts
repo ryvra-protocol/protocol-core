@@ -30,11 +30,13 @@ const nowMs = (context?: PayAdapterContext): number => context?.nowMs?.() ?? Dat
 
 export class InMemoryPayRuntime {
   private readonly cache = new InMemoryIdempotencyCache<PayResult>();
-  private readonly callbacks = new InMemoryCallbackDedupeStore(this.config.callbackDedupeTtlMs);
+  private readonly callbacks: InMemoryCallbackDedupeStore;
   private readonly records = new Map<string, PayRecord>();
   readonly outbox = new InMemoryOutbox();
 
-  constructor(private readonly config: { callbackDedupeTtlMs: number }) {}
+  constructor(private readonly config: { callbackDedupeTtlMs: number }) {
+    this.callbacks = new InMemoryCallbackDedupeStore(config.callbackDedupeTtlMs);
+  }
 
   async create(input: PayCreateInput, context?: PayAdapterContext): Promise<PayResult> {
     assertCreatePaymentIntentInput(input);

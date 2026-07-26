@@ -1,4 +1,4 @@
-import { SettlementState } from "@ryvra/contracts";
+import { PaymentIntentState, SettlementState } from "@ryvra/contracts";
 
 import { postJson } from "../client.js";
 import { PayTimeoutError, PayUnavailableError } from "../errors.js";
@@ -82,7 +82,7 @@ export const createHttpPayAdapter = (config: HttpPayAdapterConfig): PayAdapter =
       if (error instanceof PayTimeoutError) {
         const timeoutResult = runtime.upsertFromHttpCreate({
           createInput: input,
-          state: "executing",
+          state: PaymentIntentState.executing,
           settlementState: SettlementState.accepted,
           timedOutPendingCallback: true,
           rewardEligible: false
