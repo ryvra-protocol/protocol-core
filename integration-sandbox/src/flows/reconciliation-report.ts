@@ -1,9 +1,25 @@
-import { PolicyDecision, SettlementState, type ReconciliationReport, type ReferenceId } from "@ryvra/contracts";
+import { PolicyDecision, SettlementState, asIdempotencyKey, type ReconciliationReport, type ReferenceId } from "@ryvra/contracts";
 
 import type { SandboxContext } from "../context.js";
 
-export const buildReconciliationReport = (context: SandboxContext): ReconciliationReport => {
+export const buildReconciliationReport = async (context: SandboxContext): Promise<ReconciliationReport> => {
   const decisions = Array.from(context.decisionsByReference.entries());
+  const allowedReferences = decisions
+    .filter(([, decision]) => decision.decision === PolicyDecision.ALLOW)
+    .map(([reference_id]) => reference_id);
+
+  const reconciliation = await context.ledgerSettlementAdapter.reconcile({
+    reference_id: allowedReferences[0] ?? context.nextReferenceId(),
+    correlation_id: context.nextCorrelationId(),
+    idempotency_key:
+      context.intentsByReplayKey.values().next().value?.idempotency_key ?? asIdempotencyKey("idem_reconcile_fallback"),
+    reference_ids: allowedReferences
+  });
+  for (const item of reconciliation.items) {
+    if (item.settlement_state) {
+      context.settlementByReference.set(item.reference_id, item.settlement_state);
+    }
+  }
 
   const unreconciled_items: Array<{ reference_id: ReferenceId; reason: string }> = [];
   for (const [reference_id, decision] of decisions) {

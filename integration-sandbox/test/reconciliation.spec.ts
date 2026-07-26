@@ -42,7 +42,7 @@ test("reconciliation report totals and unreconciled handling are deterministic",
     risk_score: 5
   });
 
-  const report = buildReconciliationReport(context);
+  const report = await buildReconciliationReport(context);
   assert.deepEqual(report, {
     total_intents: 2,
     allowed_count: 1,
