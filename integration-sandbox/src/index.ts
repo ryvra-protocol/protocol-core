@@ -2,6 +2,7 @@ export * from "./types.js";
 export * from "./context.js";
 export * from "./adapters/policy-risk.adapter.js";
 export * from "./adapters/ledger-settlement.adapter.js";
+export * from "./adapters/pay.adapter.js";
 export * from "./flows/happy-path-payment.js";
 export * from "./flows/denied-payment.js";
 export * from "./flows/idempotent-retry.js";

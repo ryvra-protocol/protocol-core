@@ -93,6 +93,25 @@ jobs:
       - name: Test ledger-settlement adapter
         run: pnpm --filter ./adapters/ledger-settlement run test
 
+  pay-adapter:
+    name: Pay adapter typecheck and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.16.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck pay adapter
+        run: pnpm --filter ./adapters/pay run typecheck
+      - name: Test pay adapter
+        run: pnpm --filter ./adapters/pay run test
+
   integration-sandbox:
     name: Integration sandbox typecheck and test
     runs-on: ubuntu-latest

@@ -29,3 +29,15 @@ Deterministic, CI-safe end-to-end sandbox for policy, ledger, settlement, PoT co
 - `LEDGER_SETTLEMENT_RETRY_BASE_DELAY_MS` (default: `50`)
 - `LEDGER_SETTLEMENT_FAILURE_THRESHOLD` (default: `3`)
 - `LEDGER_SETTLEMENT_COOLDOWN_MS` (default: `1000`)
+
+## Pay adapter configuration
+
+- `PAY_MODE=deterministic|http` (default: `deterministic`)
+- `PAY_BASE_URL` (required for `http` mode)
+- `PAY_TIMEOUT_MS` (default: `1500`)
+- `PAY_MAX_RETRIES` (default: `2`)
+- `PAY_RETRY_BASE_DELAY_MS` (default: `50`)
+- `PAY_FAILURE_THRESHOLD` (default: `3`)
+- `PAY_COOLDOWN_MS` (default: `1000`)
+- `PAY_WEBHOOK_SECRET` (optional signature verification secret)
+- `PAY_CALLBACK_DEDUPE_TTL_MS` (default: `300000`)
