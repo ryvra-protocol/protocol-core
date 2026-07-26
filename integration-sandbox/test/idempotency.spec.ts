@@ -5,7 +5,7 @@ import { account, asset, createSandboxContext, idempotency, reference } from "..
 import { runHappyPathPayment } from "../src/flows/happy-path-payment.js";
 import { runIdempotentRetry } from "../src/flows/idempotent-retry.js";
 
-test("idempotent replay does not duplicate postings and emits duplicate reason code", () => {
+test("idempotent replay does not duplicate postings and emits duplicate reason code", async () => {
   const context = createSandboxContext();
   const input = {
     context,
@@ -18,11 +18,11 @@ test("idempotent replay does not duplicate postings and emits duplicate reason c
     risk_score: 20
   };
 
-  runHappyPathPayment(input);
+  await runHappyPathPayment(input);
   const beforeLedgerCount = context.ledgerByReference.size;
   const beforeContributionCount = context.contributionsByReference.size;
 
-  const replay = runIdempotentRetry(context, input);
+  const replay = await runIdempotentRetry(context, input);
 
   assert.equal(replay.result.duplicate_detected, true);
   assert.equal(context.ledgerByReference.size, beforeLedgerCount);

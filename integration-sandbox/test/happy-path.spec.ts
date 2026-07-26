@@ -7,9 +7,9 @@ import { asset, createSandboxContext, idempotency, reference, account } from "..
 import { hasDoubleEntryBalance } from "../src/mocks/ledger-settlement.mock.js";
 import { runHappyPathPayment } from "../src/flows/happy-path-payment.js";
 
-test("happy path reaches finalized/reconciled and emits PoT contribution", () => {
+test("happy path reaches finalized/reconciled and emits PoT contribution", async () => {
   const context = createSandboxContext();
-  const { result, context: updated } = runHappyPathPayment({
+  const { result, context: updated } = await runHappyPathPayment({
     context,
     payer: account("acct_alice"),
     payee: account("acct_bob"),
@@ -20,6 +20,7 @@ test("happy path reaches finalized/reconciled and emits PoT contribution", () =>
     risk_score: 10
   });
 
+  assert.equal(updated.policyRiskMode, "deterministic");
   assert.equal(result.decision.decision, PolicyDecision.ALLOW);
   assert.equal(result.settlement_state, SettlementState.reconciled);
   assert.ok(result.contribution_event);

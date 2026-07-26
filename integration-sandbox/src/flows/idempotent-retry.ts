@@ -4,7 +4,7 @@ import { makeReplayKey, type SandboxContext } from "../context.js";
 import { emitEvent } from "../logging/event-log.js";
 import { runHappyPathPayment, type HappyPathInput } from "./happy-path-payment.js";
 
-export const runIdempotentRetry = (context: SandboxContext, input: HappyPathInput) => {
+export const runIdempotentRetry = async (context: SandboxContext, input: HappyPathInput) => {
   const replayKey = makeReplayKey(input.reference_id, input.idempotency_key);
   const existing = context.intentsByReplayKey.get(replayKey);
 

@@ -9,6 +9,7 @@ import type {
   LedgerTransaction,
   PaymentIntent,
   PolicyDecisionOutput,
+  PolicyVersion,
   PostingId,
   ReferenceId,
   SettlementState
@@ -22,6 +23,9 @@ import {
   asPostingId,
   asReferenceId
 } from "@ryvra/contracts";
+import type { PolicyRiskAdapter, PolicyRiskMode } from "@ryvra/policy-risk-adapter";
+
+import { createPolicyRiskRuntime } from "./adapters/policy-risk.adapter.js";
 
 export interface SandboxContext {
   now: () => string;
@@ -39,9 +43,20 @@ export interface SandboxContext {
   events: EventEnvelope<unknown>[];
   duplicateAttemptCount: number;
   failedTransitionsCount: number;
+  policyRiskMode: PolicyRiskMode;
+  policyRiskVersion: PolicyVersion;
+  policyRiskAdapter: PolicyRiskAdapter;
 }
 
-export const createSandboxContext = (): SandboxContext => {
+export interface CreateSandboxContextOptions {
+  env?: NodeJS.ProcessEnv;
+  policyRiskAdapter?: PolicyRiskAdapter;
+  policyRiskMode?: PolicyRiskMode;
+  policyRiskVersion?: PolicyVersion;
+}
+
+export const createSandboxContext = (options: CreateSandboxContextOptions = {}): SandboxContext => {
+  const runtime = createPolicyRiskRuntime(options.env);
   const base = new Date("2026-01-01T00:00:00.000Z").getTime();
   let tick = 0;
   let eventSequence = 0;
@@ -64,7 +79,10 @@ export const createSandboxContext = (): SandboxContext => {
     contributionsByReference: new Map(),
     events: [],
     duplicateAttemptCount: 0,
-    failedTransitionsCount: 0
+    failedTransitionsCount: 0,
+    policyRiskMode: options.policyRiskMode ?? runtime.mode,
+    policyRiskVersion: options.policyRiskVersion ?? runtime.policyVersion,
+    policyRiskAdapter: options.policyRiskAdapter ?? runtime.adapter
   };
 };
 

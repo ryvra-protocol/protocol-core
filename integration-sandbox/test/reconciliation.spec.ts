@@ -6,10 +6,10 @@ import { runHappyPathPayment } from "../src/flows/happy-path-payment.js";
 import { runIdempotentRetry } from "../src/flows/idempotent-retry.js";
 import { buildReconciliationReport } from "../src/flows/reconciliation-report.js";
 
-test("reconciliation report totals and unreconciled handling are deterministic", () => {
+test("reconciliation report totals and unreconciled handling are deterministic", async () => {
   const context = createSandboxContext();
 
-  runHappyPathPayment({
+  await runHappyPathPayment({
     context,
     payer: account("acct_r1"),
     payee: account("acct_r2"),
@@ -20,7 +20,7 @@ test("reconciliation report totals and unreconciled handling are deterministic",
     risk_score: 5
   });
 
-  runHappyPathPayment({
+  await runHappyPathPayment({
     context,
     payer: account("acct_r3"),
     payee: account("acct_r4"),
@@ -31,7 +31,7 @@ test("reconciliation report totals and unreconciled handling are deterministic",
     risk_score: 90
   });
 
-  runIdempotentRetry(context, {
+  await runIdempotentRetry(context, {
     context,
     payer: account("acct_r1"),
     payee: account("acct_r2"),

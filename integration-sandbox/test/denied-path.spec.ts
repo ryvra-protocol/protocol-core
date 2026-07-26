@@ -6,9 +6,9 @@ import { PolicyDecision, SettlementState, validatePolicyDecisionOutput } from "@
 import { account, asset, createSandboxContext, idempotency, reference } from "../src/context.js";
 import { runDeniedPathPayment } from "../src/flows/denied-payment.js";
 
-test("denied path emits deny reason codes and no finalized settlement posting", () => {
+test("denied path emits deny reason codes and no finalized settlement posting", async () => {
   const context = createSandboxContext();
-  const { result, context: updated } = runDeniedPathPayment({
+  const { result, context: updated } = await runDeniedPathPayment({
     context,
     payer: account("acct_denied_payer"),
     payee: account("acct_denied_payee"),
