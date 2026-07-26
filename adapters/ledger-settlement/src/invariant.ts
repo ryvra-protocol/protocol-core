@@ -2,11 +2,14 @@ import type { LedgerPosting, LedgerTransaction } from "@ryvra/contracts";
 
 import { LedgerSettlementValidationError } from "./errors.js";
 
-export const hasDoubleEntryBalance = (postings: readonly LedgerPosting[]): boolean => {
-  const debit = postings.filter((posting) => posting.direction === "debit").reduce((sum, posting) => sum + posting.amount_minor, 0);
-  const credit = postings
-    .filter((posting) => posting.direction === "credit")
-    .reduce((sum, posting) => sum + posting.amount_minor, 0);
+export const hasDoubleEntryBalance = (input: readonly LedgerPosting[] | LedgerTransaction): boolean => {
+  const normalized: readonly LedgerPosting[] = "postings" in input ? input.postings : input;
+  const debit = normalized
+    .filter((posting: LedgerPosting) => posting.direction === "debit")
+    .reduce((sum: number, posting: LedgerPosting) => sum + posting.amount_minor, 0);
+  const credit = normalized
+    .filter((posting: LedgerPosting) => posting.direction === "credit")
+    .reduce((sum: number, posting: LedgerPosting) => sum + posting.amount_minor, 0);
   return debit === credit;
 };
 

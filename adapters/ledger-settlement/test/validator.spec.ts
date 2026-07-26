@@ -14,6 +14,7 @@ import {
 
 import { LedgerSettlementValidationError } from "../src/errors.js";
 import { assertAdvanceSettlementInput, assertPostTransactionInput, assertSettlementState } from "../src/validator.js";
+import type { PostTransactionInput } from "../src/types.js";
 
 test("validator accepts canonical postTransaction input", () => {
   assert.doesNotThrow(() => {
@@ -37,7 +38,7 @@ test("validator accepts canonical postTransaction input", () => {
           amount_minor: 100,
           direction: "credit"
         }
-      ]
+      ] as PostTransactionInput["postings"]
     });
   });
 });
@@ -65,7 +66,7 @@ test("validator rejects legacy naming drift", () => {
             amount_minor: 10,
             direction: "credit"
           }
-        ]
+        ] as PostTransactionInput["postings"]
       });
     },
     (error) => error instanceof LedgerSettlementValidationError

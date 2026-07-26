@@ -14,8 +14,9 @@ import {
 
 import { createHttpLedgerSettlementAdapter } from "../src/modes/http.js";
 import { LedgerSettlementTimeoutError, LedgerSettlementValidationError } from "../src/errors.js";
+import type { PostTransactionInput } from "../src/types.js";
 
-const evaluateInput = {
+const evaluateInput: PostTransactionInput = {
   reference_id: asReferenceId("ref_http"),
   correlation_id: asCorrelationId("corr_http"),
   idempotency_key: asIdempotencyKey("idem_http"),

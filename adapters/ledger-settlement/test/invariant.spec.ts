@@ -1,12 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { asAccountId, asAssetId, asLedgerEventId, asPostingId, asReferenceId } from "@ryvra/contracts";
+import { asAccountId, asAssetId, asLedgerEventId, asPostingId, asReferenceId, type LedgerPosting } from "@ryvra/contracts";
 
 import { LedgerSettlementValidationError } from "../src/errors.js";
 import { assertDoubleEntryBalance, assertNonDestructiveLedgerMutation, hasDoubleEntryBalance } from "../src/invariant.js";
 
-const balanced = [
+const balanced: [LedgerPosting, LedgerPosting] = [
   {
     posting_id: asPostingId("pst_i_1"),
     account_id: asAccountId("acct_i_1"),

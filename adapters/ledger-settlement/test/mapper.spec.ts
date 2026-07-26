@@ -15,6 +15,7 @@ import {
   toCanonicalReconcileResult,
   toUpstreamPostTransactionRequest
 } from "../src/mapper.js";
+import type { PostTransactionInput } from "../src/types.js";
 
 test("mapper creates canonical upstream postTransaction request", () => {
   const payload = toUpstreamPostTransactionRequest({
@@ -36,7 +37,7 @@ test("mapper creates canonical upstream postTransaction request", () => {
         amount_minor: 8,
         direction: "credit"
       }
-    ]
+    ] as PostTransactionInput["postings"]
   });
 
   assert.deepEqual(payload, {
@@ -88,7 +89,7 @@ test("mapper drops non-canonical fields from upstream postTransaction response",
           amount_minor: 5,
           direction: "credit"
         }
-      ],
+      ] as PostTransactionInput["postings"],
       contribution_id: "legacy-should-drop"
     } as never,
     {
@@ -109,7 +110,7 @@ test("mapper drops non-canonical fields from upstream postTransaction response",
           amount_minor: 1,
           direction: "credit"
         }
-      ],
+      ] as PostTransactionInput["postings"],
       createdAt: "2026-01-01T00:00:00.000Z"
     }
   );

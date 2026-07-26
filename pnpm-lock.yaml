@@ -21,6 +21,12 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
+  adapters/ledger-settlement:
+    dependencies:
+      '@ryvra/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
+
   adapters/policy-risk:
     dependencies:
       '@ryvra/contracts':
@@ -34,6 +40,9 @@ importers:
       '@ryvra/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@ryvra/ledger-settlement-adapter':
+        specifier: workspace:*
+        version: link:../adapters/ledger-settlement
       '@ryvra/policy-risk-adapter':
         specifier: workspace:*
         version: link:../adapters/policy-risk

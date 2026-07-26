@@ -13,8 +13,9 @@ import {
 
 import { LedgerSettlementConflictError } from "../src/errors.js";
 import { createDeterministicLedgerSettlementAdapter } from "../src/modes/deterministic.js";
+import type { PostTransactionInput } from "../src/types.js";
 
-const input = {
+const input: PostTransactionInput = {
   reference_id: asReferenceId("ref_det"),
   correlation_id: asCorrelationId("corr_det"),
   idempotency_key: asIdempotencyKey("idem_det"),

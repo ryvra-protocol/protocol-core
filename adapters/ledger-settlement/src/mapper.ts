@@ -93,8 +93,10 @@ export const toUpstreamReconcileRequest = (input: ReconcileInput) => ({
 });
 
 export const toCanonicalReconcileResult = (payload: UpstreamReconcileResponse, fallback: ReconcileInput): ReconcileResult => ({
-  items: (payload.items ?? fallback.reference_ids.map((reference_id) => ({ reference_id }))).map((item) => ({
+  items: (payload.items ?? fallback.reference_ids.map((reference_id) => ({ reference_id, settlement_state: undefined }))).map(
+    (item) => ({
     reference_id: asReferenceId(item.reference_id),
     settlement_state: item.settlement_state ? assertSettlementState(item.settlement_state) : undefined
-  }))
+    })
+  )
 });

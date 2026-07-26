@@ -1,4 +1,4 @@
-import { asLedgerEventId } from "@ryvra/contracts";
+import { SettlementState, asLedgerEventId } from "@ryvra/contracts";
 
 import { LedgerSettlementConflictError } from "../errors.js";
 import { InMemoryIdempotencyCache, ledgerSettlementReplayKey } from "../idempotency.js";
@@ -20,7 +20,7 @@ export const createDeterministicLedgerSettlementAdapter = (
   const reconcileCache = new InMemoryIdempotencyCache<ReconcileResult>();
 
   const postByReference = new Map<string, { replayKey: string; result: PostTransactionResult }>();
-  const settlementByReference = new Map<string, { replayKey: string; result: AdvanceSettlementResult }>();
+  const settlementByReference = new Map<string, AdvanceSettlementResult>();
 
   return {
     async postTransaction(input, context) {
@@ -41,7 +41,7 @@ export const createDeterministicLedgerSettlementAdapter = (
             postings: input.postings,
             created_at: createdAt
           },
-          settlement_state: "accepted",
+          settlement_state: SettlementState.accepted,
           duplicate_replay: false
         } as const;
 
@@ -57,20 +57,12 @@ export const createDeterministicLedgerSettlementAdapter = (
       const replayKey = ledgerSettlementReplayKey(input.reference_id, input.idempotency_key);
 
       return settleCache.dedupe(replayKey, async () => {
-        const existing = settlementByReference.get(input.reference_id);
-        if (existing && existing.replayKey !== replayKey) {
-          throw new LedgerSettlementConflictError(
-            "Duplicate settlement conflict for reference_id with different idempotency_key.",
-            existing.result
-          );
-        }
-
         const result = {
           reference_id: input.reference_id,
           settlement_state: input.next_state,
           duplicate_replay: false
         };
-        settlementByReference.set(input.reference_id, { replayKey, result });
+        settlementByReference.set(input.reference_id, result);
         return result;
       });
     },
@@ -81,7 +73,7 @@ export const createDeterministicLedgerSettlementAdapter = (
       return reconcileCache.dedupe(replayKey, async () => ({
         items: input.reference_ids.map((reference_id) => ({
           reference_id,
-          settlement_state: settlementByReference.get(reference_id)?.result.settlement_state
+          settlement_state: settlementByReference.get(reference_id)?.settlement_state
         }))
       }));
     }

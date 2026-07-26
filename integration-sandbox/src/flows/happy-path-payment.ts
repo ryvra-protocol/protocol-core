@@ -3,6 +3,7 @@ import {
   PolicyDecision,
   SettlementState,
   asIdempotencyKey,
+  type LedgerPosting,
   type PaymentIntent
 } from "@ryvra/contracts";
 import { LedgerSettlementConflictError, hasDoubleEntryBalance } from "@ryvra/ledger-settlement-adapter";
@@ -68,6 +69,7 @@ export const runHappyPathPayment = async (input: HappyPathInput): Promise<{ cont
   emitEvent(context, intent.reference_id, correlation_id, "policy.decision", { decision });
 
   if (decision.decision !== PolicyDecision.ALLOW) {
+    context.failedTransitionsCount += 1;
     const deniedSettlement = await context.ledgerSettlementAdapter.advanceSettlement(
       {
         reference_id: intent.reference_id,
@@ -92,7 +94,7 @@ export const runHappyPathPayment = async (input: HappyPathInput): Promise<{ cont
   }
 
   intent.state = PaymentIntentState.executing;
-  const postings = [
+  const postings: [LedgerPosting, LedgerPosting] = [
     {
       posting_id: context.nextPostingId(),
       account_id: input.payer,
@@ -107,7 +109,7 @@ export const runHappyPathPayment = async (input: HappyPathInput): Promise<{ cont
       amount_minor: input.amount_minor,
       direction: "credit" as const
     }
-  ] as const;
+  ];
 
   let postResult;
   try {
@@ -136,6 +138,7 @@ export const runHappyPathPayment = async (input: HappyPathInput): Promise<{ cont
   emitEvent(context, intent.reference_id, correlation_id, "ledger.transaction_created", { ledger_transaction });
 
   if (!hasDoubleEntryBalance(ledger_transaction)) {
+    context.failedTransitionsCount += 1;
     const failedSettlement = await context.ledgerSettlementAdapter.advanceSettlement(
       {
         reference_id: intent.reference_id,
