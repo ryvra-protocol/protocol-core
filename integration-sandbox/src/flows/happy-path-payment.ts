@@ -2,13 +2,13 @@ import {
   PaymentIntentState,
   PolicyDecision,
   SettlementState,
+  asIdempotencyKey,
   type PaymentIntent
 } from "@ryvra/contracts";
 
 import { createSandboxContext, makeReplayKey, type SandboxContext } from "../context.js";
 import { emitEvent } from "../logging/event-log.js";
 import { createAccount } from "../mocks/accounts.mock.js";
-import { createBalancedTransaction, hasDoubleEntryBalance, transitionSettlement } from "../mocks/ledger-settlement.mock.js";
 import { emitContribution } from "../mocks/pot-engine.mock.js";
 import type { PaymentFlowResult } from "../types.js";
 
@@ -67,7 +67,20 @@ export const runHappyPathPayment = async (input: HappyPathInput): Promise<{ cont
   emitEvent(context, intent.reference_id, correlation_id, "policy.decision", { decision });
 
   if (decision.decision !== PolicyDecision.ALLOW) {
-    transitionSettlement(context, intent.reference_id, SettlementState.failed);
+    const failedSettlement = await context.ledgerSettlementAdapter.advanceSettlement(
+      {
+        reference_id: intent.reference_id,
+        correlation_id,
+        idempotency_key: asIdempotencyKey(`${intent.idempotency_key}:failed`),
+        next_state: SettlementState.failed
+      },
+      {
+        now: context.now,
+        nextEventId: context.nextEventId
+      }
+    );
+    context.settlementByReference.set(intent.reference_id, failedSettlement.settlement_state);
+    context.failedTransitionsCount += 1;
     emitEvent(context, intent.reference_id, correlation_id, "payment.denied", { reason_codes: decision.reason_codes });
     return {
       context,
@@ -81,34 +94,66 @@ export const runHappyPathPayment = async (input: HappyPathInput): Promise<{ cont
   }
 
   intent.state = PaymentIntentState.executing;
-  const ledger_transaction = createBalancedTransaction(context, {
-    reference_id: intent.reference_id,
-    from_account_id: input.payer,
-    to_account_id: input.payee,
-    asset_id: input.asset_id,
-    amount_minor: input.amount_minor
-  });
+  const postResult = await context.ledgerSettlementAdapter.postTransaction(
+    {
+      reference_id: intent.reference_id,
+      correlation_id,
+      idempotency_key: intent.idempotency_key,
+      policy_version: context.policyRiskVersion,
+      postings: [
+        {
+          account_id: input.payer,
+          asset_id: input.asset_id,
+          amount_minor: input.amount_minor,
+          direction: "debit"
+        },
+        {
+          account_id: input.payee,
+          asset_id: input.asset_id,
+          amount_minor: input.amount_minor,
+          direction: "credit"
+        }
+      ]
+    },
+    {
+      now: context.now,
+      nextEventId: context.nextEventId,
+      nextPostingId: context.nextPostingId
+    }
+  );
+  const { ledger_transaction } = postResult;
+  context.ledgerByReference.set(intent.reference_id, ledger_transaction);
+  context.settlementByReference.set(intent.reference_id, postResult.settlement_state);
   emitEvent(context, intent.reference_id, correlation_id, "ledger.transaction_created", { ledger_transaction });
 
-  if (!hasDoubleEntryBalance(ledger_transaction)) {
-    transitionSettlement(context, intent.reference_id, SettlementState.failed);
-    emitEvent(context, intent.reference_id, correlation_id, "ledger.invariant_failed", { reference_id: intent.reference_id });
-    return {
-      context,
-      result: {
-        intent,
-        decision,
-        settlement_state: SettlementState.failed,
-        ledger_transaction,
-        duplicate_detected: false
-      }
-    };
-  }
-
-  transitionSettlement(context, intent.reference_id, SettlementState.finalized);
+  const finalized = await context.ledgerSettlementAdapter.advanceSettlement(
+    {
+      reference_id: intent.reference_id,
+      correlation_id,
+      idempotency_key: asIdempotencyKey(`${intent.idempotency_key}:finalized`),
+      next_state: SettlementState.finalized
+    },
+    {
+      now: context.now,
+      nextEventId: context.nextEventId
+    }
+  );
+  context.settlementByReference.set(intent.reference_id, finalized.settlement_state);
   emitEvent(context, intent.reference_id, correlation_id, "settlement.finalized", { state: SettlementState.finalized });
 
-  transitionSettlement(context, intent.reference_id, SettlementState.reconciled);
+  const reconciled = await context.ledgerSettlementAdapter.advanceSettlement(
+    {
+      reference_id: intent.reference_id,
+      correlation_id,
+      idempotency_key: asIdempotencyKey(`${intent.idempotency_key}:reconciled`),
+      next_state: SettlementState.reconciled
+    },
+    {
+      now: context.now,
+      nextEventId: context.nextEventId
+    }
+  );
+  context.settlementByReference.set(intent.reference_id, reconciled.settlement_state);
   intent.state = PaymentIntentState.settled;
   emitEvent(context, intent.reference_id, correlation_id, "settlement.reconciled", { state: SettlementState.reconciled });
 

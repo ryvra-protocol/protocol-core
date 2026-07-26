@@ -2,9 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { CANONICAL_EVENT_ENVELOPE_FIELDS, PolicyDecision, SettlementState } from "@ryvra/contracts";
+import { hasDoubleEntryBalance } from "@ryvra/ledger-settlement-adapter";
 
 import { asset, createSandboxContext, idempotency, reference, account } from "../src/context.js";
-import { hasDoubleEntryBalance } from "../src/mocks/ledger-settlement.mock.js";
 import { runHappyPathPayment } from "../src/flows/happy-path-payment.js";
 
 test("happy path reaches finalized/reconciled and emits PoT contribution", async () => {
@@ -21,6 +21,7 @@ test("happy path reaches finalized/reconciled and emits PoT contribution", async
   });
 
   assert.equal(updated.policyRiskMode, "deterministic");
+  assert.equal(updated.ledgerSettlementMode, "deterministic");
   assert.equal(result.decision.decision, PolicyDecision.ALLOW);
   assert.equal(result.settlement_state, SettlementState.reconciled);
   assert.ok(result.contribution_event);

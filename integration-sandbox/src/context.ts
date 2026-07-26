@@ -24,7 +24,9 @@ import {
   asReferenceId
 } from "@ryvra/contracts";
 import type { PolicyRiskAdapter, PolicyRiskMode } from "@ryvra/policy-risk-adapter";
+import type { LedgerSettlementAdapter, LedgerSettlementMode } from "@ryvra/ledger-settlement-adapter";
 
+import { createLedgerSettlementRuntime } from "./adapters/ledger-settlement.adapter.js";
 import { createPolicyRiskRuntime } from "./adapters/policy-risk.adapter.js";
 
 export interface SandboxContext {
@@ -46,6 +48,8 @@ export interface SandboxContext {
   policyRiskMode: PolicyRiskMode;
   policyRiskVersion: PolicyVersion;
   policyRiskAdapter: PolicyRiskAdapter;
+  ledgerSettlementMode: LedgerSettlementMode;
+  ledgerSettlementAdapter: LedgerSettlementAdapter;
 }
 
 export interface CreateSandboxContextOptions {
@@ -53,10 +57,13 @@ export interface CreateSandboxContextOptions {
   policyRiskAdapter?: PolicyRiskAdapter;
   policyRiskMode?: PolicyRiskMode;
   policyRiskVersion?: PolicyVersion;
+  ledgerSettlementAdapter?: LedgerSettlementAdapter;
+  ledgerSettlementMode?: LedgerSettlementMode;
 }
 
 export const createSandboxContext = (options: CreateSandboxContextOptions = {}): SandboxContext => {
   const runtime = createPolicyRiskRuntime(options.env);
+  const ledgerSettlementRuntime = createLedgerSettlementRuntime(options.env);
   const base = new Date("2026-01-01T00:00:00.000Z").getTime();
   let tick = 0;
   let eventSequence = 0;
@@ -82,7 +89,9 @@ export const createSandboxContext = (options: CreateSandboxContextOptions = {}):
     failedTransitionsCount: 0,
     policyRiskMode: options.policyRiskMode ?? runtime.mode,
     policyRiskVersion: options.policyRiskVersion ?? runtime.policyVersion,
-    policyRiskAdapter: options.policyRiskAdapter ?? runtime.adapter
+    policyRiskAdapter: options.policyRiskAdapter ?? runtime.adapter,
+    ledgerSettlementMode: options.ledgerSettlementMode ?? ledgerSettlementRuntime.mode,
+    ledgerSettlementAdapter: options.ledgerSettlementAdapter ?? ledgerSettlementRuntime.adapter
   };
 };
 

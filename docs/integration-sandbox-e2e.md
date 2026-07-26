@@ -5,8 +5,8 @@
 1. Create account records for payer/payee in sandbox context.
 2. Create payment intent with deterministic `reference_id`, `idempotency_key`, and `correlation_id`.
 3. Evaluate policy through `PolicyRiskAdapter.evaluate(...)` and receive `ALLOW`.
-4. Create balanced double-entry ledger transaction (`sum(debit) == sum(credit)`).
-5. Transition settlement to `finalized`, then `reconciled`.
+4. Post balanced double-entry ledger transaction through `LedgerSettlementAdapter.postTransaction(...)`.
+5. Advance settlement through `LedgerSettlementAdapter.advanceSettlement(...)` to `finalized`, then `reconciled`.
 6. Emit PoT `ContributionEvent` with canonical `ledger_event_id`.
 7. Persist ordered event envelope log with deterministic timestamps.
 
@@ -21,7 +21,7 @@
 ## Idempotency behavior
 
 - Replay key is `reference_id::idempotency_key`.
-- First request stores deterministic result.
+- First request stores deterministic result across policy + ledger-settlement boundaries.
 - Replayed request returns prior result and avoids duplicate ledger postings.
 - Duplicate replay emits `idempotency.duplicate_detected` with `DUPLICATE_REFERENCE_*` reason code.
 
@@ -46,12 +46,12 @@
 
 ## Adapter boundary note
 
-Policy-risk decisions now route through a real adapter boundary in sandbox flows.
-Deterministic mode remains the default in CI and tests to preserve deterministic coverage.
+Policy-risk decisions and ledger-settlement execution now route through real adapter boundaries in sandbox flows.
+Deterministic mode remains the default in CI and tests to preserve deterministic coverage and schema-stable reconciliation.
 
 ## Known limitations and next steps
 
 - Policy-risk deterministic thresholds and PoT contribution weights are `TBD by governance/policy`.
-- No external settlement/ledger provider connectivity in this baseline.
+- HTTP mode is boundary-complete but external provider production hardening remains out of scope for this phase.
 - Broaden scenario matrix for market flows, reversals, and partial failures in subsequent iterations.
 - Expand real adapter integration coverage across accounts, asset-registry, ledger-settlement, pay, and markets.

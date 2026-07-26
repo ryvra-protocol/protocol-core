@@ -2,7 +2,7 @@
 
 **Status:** early draft
 **Verification:** canonical alignment verification completed against `v0.2.1-contract-hardening`.
-**Phase 2:** policy-risk real adapter boundary rollout started (deterministic + http modes).
+**Phase 2:** policy-risk adapter boundary merged and Phase 2b ledger-settlement adapter boundary implemented (deterministic + http modes).
 
 Ryvra Protocol Core is the foundational specification surface for a protocol that combines:
 
