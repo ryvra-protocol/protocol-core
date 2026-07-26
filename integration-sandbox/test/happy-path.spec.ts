@@ -2,9 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { CANONICAL_EVENT_ENVELOPE_FIELDS, PolicyDecision, SettlementState } from "@ryvra/contracts";
+import { hasDoubleEntryBalance } from "@ryvra/ledger-settlement-adapter";
 
 import { asset, createSandboxContext, idempotency, reference, account } from "../src/context.js";
-import { hasDoubleEntryBalance } from "../src/mocks/ledger-settlement.mock.js";
 import { runHappyPathPayment } from "../src/flows/happy-path-payment.js";
 
 test("happy path reaches finalized/reconciled and emits PoT contribution", async () => {

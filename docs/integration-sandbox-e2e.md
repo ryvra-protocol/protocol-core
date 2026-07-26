@@ -5,8 +5,8 @@
 1. Create account records for payer/payee in sandbox context.
 2. Create payment intent with deterministic `reference_id`, `idempotency_key`, and `correlation_id`.
 3. Evaluate policy through `PolicyRiskAdapter.evaluate(...)` and receive `ALLOW`.
-4. Create balanced double-entry ledger transaction (`sum(debit) == sum(credit)`).
-5. Transition settlement to `finalized`, then `reconciled`.
+4. Post balanced double-entry ledger transaction through `LedgerSettlementAdapter.postTransaction(...)` (`sum(debit) == sum(credit)`).
+5. Advance settlement through `LedgerSettlementAdapter.advanceSettlement(...)` to `finalized`, then `reconciled`.
 6. Emit PoT `ContributionEvent` with canonical `ledger_event_id`.
 7. Persist ordered event envelope log with deterministic timestamps.
 
@@ -47,6 +47,7 @@
 ## Adapter boundary note
 
 Policy-risk decisions now route through a real adapter boundary in sandbox flows.
+Ledger/settlement operations now route through a real adapter boundary in sandbox flows.
 Deterministic mode remains the default in CI and tests to preserve deterministic coverage.
 
 ## Known limitations and next steps
