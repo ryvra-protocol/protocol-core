@@ -4,3 +4,6 @@ packages:
   - "adapters/*"
   - "apps/*"
   - "packages/*"
+
+overrides:
+  js-yaml: 4.2.0
