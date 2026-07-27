@@ -48,7 +48,17 @@
 
 Policy-risk decisions now route through a real adapter boundary in sandbox flows.
 Ledger/settlement operations now route through a real adapter boundary in sandbox flows.
+Pay callback/retry reconciliation semantics are now covered via `@ryvra/pay-adapter` deterministic/http reliability scenarios.
 Deterministic mode remains the default in CI and tests to preserve deterministic coverage.
+
+## Phase 2c reliability outcomes
+
+- Duplicate callback replay: pass (no duplicate side effects; duplicate audit signal emitted).
+- Out-of-order callback handling: pass (stale callbacks ignored safely).
+- Timeout-then-success: pass (pending execution reconciles to settled exactly once on late success callback).
+- Rewards gating: pass (no rewards on denied/failed/unreconciled/reversed outcomes).
+- Reversal handling: pass (compensating-event semantics; no destructive mutation path).
+- Canonical envelope/state vocabulary drift checks: pass (no legacy `contribution_id` reintroduced; canonical fields unchanged).
 
 ## Known limitations and next steps
 

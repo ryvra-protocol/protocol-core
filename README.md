@@ -3,6 +3,7 @@
 **Status:** early draft
 **Verification:** canonical alignment verification completed against `v0.2.1-contract-hardening`.
 **Phase 2:** policy-risk and ledger-settlement real adapter boundaries implemented (deterministic + http modes).
+**Phase 2c:** pay boundary hardening for callback/retry/reconciliation integrity completed. See [`docs/pay-boundary-hardening.md`](./docs/pay-boundary-hardening.md) and [`docs/reliability-scenarios-matrix.md`](./docs/reliability-scenarios-matrix.md).
 
 Ryvra Protocol Core is the foundational specification surface for a protocol that combines:
 
