@@ -82,6 +82,23 @@ test("late success callback after timeout reconciles once", async () => {
   await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
 });
 
+test("late failed callback after terminal success is stale-safe and does not corrupt state", async () => {
+  const { adapter, runtime } = createDeterministicPayRuntimeAdapter({ mode: "deterministic", callbackDedupeTtlMs: 60_000 });
+  const input = makeInput("late_failed");
+
+  await adapter.createPaymentIntent(input);
+  await adapter.handleProviderCallback({ ...input, event_type: "settled", provider_event_id: "evt_late_failed_settled" });
+  const lateFailed = await adapter.handleProviderCallback({
+    ...input,
+    event_type: "failed",
+    provider_event_id: "evt_late_failed_failed"
+  });
+
+  assert.equal(lateFailed.intent.state, PaymentIntentState.settled);
+  assert.equal(lateFailed.reward_eligible, true);
+  assert.equal(runtime.outbox.all().some((entry) => entry.envelope.event_type === "callback.stale_ignored"), true);
+});
+
 test("rewards stay blocked on failed and unreconciled paths", async () => {
   const { adapter } = createDeterministicPayRuntimeAdapter({ mode: "deterministic", callbackDedupeTtlMs: 60_000 });
   const input = makeInput("failed");

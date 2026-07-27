@@ -38,6 +38,10 @@ export const applyPaymentTransition = (
     return { state: current, applied: false, stale: false };
   }
 
+  if (current === PaymentIntentState.settled && next === PaymentIntentState.failed) {
+    return { state: current, applied: false, stale: true };
+  }
+
   if (STATE_ORDER[next] < STATE_ORDER[current]) {
     return { state: current, applied: false, stale: true };
   }
