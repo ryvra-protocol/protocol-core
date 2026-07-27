@@ -56,6 +56,7 @@ Deterministic mode remains the default in CI and tests to preserve deterministic
 - Duplicate callback replay: pass (no duplicate side effects; duplicate audit signal emitted).
 - Out-of-order callback handling: pass (stale callbacks ignored safely).
 - Timeout-then-success: pass (pending execution reconciles to settled exactly once on late success callback).
+- Late-failure-after-success: pass (terminal settled state is stale-safe and not corrupted by late failed callback).
 - Rewards gating: pass (no rewards on denied/failed/unreconciled/reversed outcomes).
 - Reversal handling: pass (compensating-event semantics; no destructive mutation path).
 - Canonical envelope/state vocabulary drift checks: pass (no legacy `contribution_id` reintroduced; canonical fields unchanged).

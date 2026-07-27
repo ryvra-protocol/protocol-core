@@ -19,6 +19,13 @@ test("state machine treats out-of-order callback as stale no-op", () => {
   assert.equal(transition.state, PaymentIntentState.settled);
 });
 
+test("state machine treats late failed callback after settled as stale no-op", () => {
+  const transition = applyPaymentTransition(PaymentIntentState.settled, PaymentIntentState.failed);
+  assert.equal(transition.applied, false);
+  assert.equal(transition.stale, true);
+  assert.equal(transition.state, PaymentIntentState.settled);
+});
+
 test("state machine rejects invalid transition in strict mode", () => {
   assert.throws(
     () => applyPaymentTransition(PaymentIntentState.created, PaymentIntentState.reversed, { strict: true }),
