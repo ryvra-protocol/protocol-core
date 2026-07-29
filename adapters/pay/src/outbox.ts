@@ -1,9 +1,9 @@
 import type { CorrelationId, EventEnvelope, ReferenceId } from "@ryvra/contracts";
 import { asLedgerEventId } from "@ryvra/contracts";
 
-import type { OutboxMessage } from "./types.js";
+import type { OutboxMessage, PayOutbox } from "./types.js";
 
-export class InMemoryOutbox {
+export class InMemoryOutbox implements PayOutbox {
   private readonly messages: OutboxMessage[] = [];
   private sequence = 0;
 

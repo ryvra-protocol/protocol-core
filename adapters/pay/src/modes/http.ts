@@ -20,7 +20,8 @@ export const createHttpPayAdapter = (config: HttpPayAdapterConfig): PayAdapter =
   const { adapter: deterministicAdapter, runtime } = createDeterministicPayRuntimeAdapter({
     mode: "deterministic",
     callbackDedupeTtlMs: config.callbackDedupeTtlMs,
-    webhookSecret: config.webhookSecret
+    webhookSecret: config.webhookSecret,
+    persistence: config.persistence
   });
 
   let consecutiveFailures = 0;
