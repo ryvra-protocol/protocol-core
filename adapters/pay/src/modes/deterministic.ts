@@ -22,7 +22,10 @@ import type {
   PayQueryInput,
   PayQueryResult,
   PayRecord,
-  PayResult
+  PayResult,
+  PayRuntimePersistence,
+  PayOutbox,
+  CallbackDedupeStore
 } from "../types.js";
 
 const nowIso = (context?: PayAdapterContext): string => context?.now?.() ?? new Date(0).toISOString();
@@ -30,12 +33,13 @@ const nowMs = (context?: PayAdapterContext): number => context?.nowMs?.() ?? Dat
 
 export class InMemoryPayRuntime {
   private readonly cache = new InMemoryIdempotencyCache<PayResult>();
-  private readonly callbacks: InMemoryCallbackDedupeStore;
+  private readonly callbacks: CallbackDedupeStore;
   private readonly records = new Map<string, PayRecord>();
-  readonly outbox = new InMemoryOutbox();
+  readonly outbox: PayOutbox;
 
-  constructor(private readonly config: { callbackDedupeTtlMs: number }) {
-    this.callbacks = new InMemoryCallbackDedupeStore(config.callbackDedupeTtlMs);
+  constructor(private readonly config: { callbackDedupeTtlMs: number; persistence?: PayRuntimePersistence }) {
+    this.callbacks = config.persistence?.callbackDedupeStore ?? new InMemoryCallbackDedupeStore(config.callbackDedupeTtlMs);
+    this.outbox = config.persistence?.outbox ?? new InMemoryOutbox();
   }
 
   async create(input: PayCreateInput, context?: PayAdapterContext): Promise<PayResult> {
@@ -276,7 +280,10 @@ export class InMemoryPayRuntime {
 }
 
 export const createDeterministicPayAdapter = (config: DeterministicPayAdapterConfig): PayAdapter => {
-  const runtime = new InMemoryPayRuntime({ callbackDedupeTtlMs: config.callbackDedupeTtlMs });
+  const runtime = new InMemoryPayRuntime({
+    callbackDedupeTtlMs: config.callbackDedupeTtlMs,
+    persistence: config.persistence
+  });
 
   return {
     createPaymentIntent: (input, context) => runtime.create(input, context),
@@ -288,7 +295,10 @@ export const createDeterministicPayAdapter = (config: DeterministicPayAdapterCon
 export const createDeterministicPayRuntimeAdapter = (
   config: DeterministicPayAdapterConfig
 ): { adapter: PayAdapter; runtime: InMemoryPayRuntime } => {
-  const runtime = new InMemoryPayRuntime({ callbackDedupeTtlMs: config.callbackDedupeTtlMs });
+  const runtime = new InMemoryPayRuntime({
+    callbackDedupeTtlMs: config.callbackDedupeTtlMs,
+    persistence: config.persistence
+  });
   return {
     adapter: {
       createPaymentIntent: (input, context) => runtime.create(input, context),

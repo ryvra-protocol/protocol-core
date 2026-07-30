@@ -17,6 +17,13 @@ Pay adapter boundary for protocol-core Phase 2c hardening.
 - Outbox emits canonical event envelopes (`event_id`, `correlation_id`, `reference_id`, `event_type`, `timestamp`, `payload`).
 - Rewards/PoT eligibility emits only on valid settled/reconciled success paths.
 
+## Persistence boundary hooks
+
+- Deterministic and http modes both accept optional runtime persistence hooks:
+  - `persistence.callbackDedupeStore` for callback replay dedupe state
+  - `persistence.outbox` for canonical envelope outbox state
+- Defaults remain in-memory for CI-safe deterministic execution.
+
 ## Environment contract
 
 - `PAY_MODE` = `deterministic | http` (default: `deterministic`)

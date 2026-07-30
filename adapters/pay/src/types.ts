@@ -76,6 +76,7 @@ export interface DeterministicPayAdapterConfig {
   mode: "deterministic";
   callbackDedupeTtlMs: number;
   webhookSecret?: string;
+  persistence?: PayRuntimePersistence;
 }
 
 export interface HttpPayAdapterConfig {
@@ -86,6 +87,7 @@ export interface HttpPayAdapterConfig {
   callbackDedupeTtlMs: number;
   webhookSecret?: string;
   circuitBreaker?: CircuitBreakerLiteConfig;
+  persistence?: PayRuntimePersistence;
 }
 
 export type PayAdapterConfig = DeterministicPayAdapterConfig | HttpPayAdapterConfig;
@@ -93,6 +95,25 @@ export type PayAdapterConfig = DeterministicPayAdapterConfig | HttpPayAdapterCon
 export interface CallbackDedupeStore {
   seen(key: string, nowMs: number): boolean;
   mark(key: string, nowMs: number): void;
+}
+
+export interface PayOutbox {
+  enqueue<TPayload>(input: {
+    correlation_id: CorrelationId;
+    reference_id: ReferenceId;
+    event_type: string;
+    timestamp: string;
+    payload: TPayload;
+    dedupe_key: string;
+  }): EventEnvelope<TPayload>;
+  pending(): OutboxMessage[];
+  markDelivered(eventId: string): void;
+  all(): OutboxMessage[];
+}
+
+export interface PayRuntimePersistence {
+  callbackDedupeStore?: CallbackDedupeStore;
+  outbox?: PayOutbox;
 }
 
 export interface PayRecord {
