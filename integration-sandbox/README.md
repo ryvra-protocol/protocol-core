@@ -8,7 +8,7 @@ Deterministic, CI-safe end-to-end sandbox for policy, ledger, settlement, PoT co
 - Ledger/settlement operations route through `LedgerSettlementAdapter` boundary.
 - Deterministic IDs/timestamps for stable test assertions.
 - Compensating-event style audit semantics (no destructive ledger operations).
-- Non-final policy thresholds and PoT weights are marked as `TBD by governance/policy`.
+- Governance-controlled policy thresholds and PoT weights are now centralized in explicit sandbox governance config contracts.
 
 ## Policy-risk adapter configuration
 
@@ -19,6 +19,8 @@ Deterministic, CI-safe end-to-end sandbox for policy, ledger, settlement, PoT co
 - `POLICY_RISK_RETRY_BASE_DELAY_MS` (default: `50`)
 - `POLICY_RISK_FAILURE_THRESHOLD` (default: `3`)
 - `POLICY_RISK_COOLDOWN_MS` (default: `1000`)
+- `POLICY_RISK_MAX_ALLOWED_AMOUNT_MINOR` (default: `1000000`)
+- `POLICY_RISK_MAX_ALLOWED_RISK_SCORE` (default: `70`)
 
 ## Ledger-settlement adapter configuration
 
@@ -41,3 +43,8 @@ Deterministic, CI-safe end-to-end sandbox for policy, ledger, settlement, PoT co
 - `PAY_COOLDOWN_MS` (default: `1000`)
 - `PAY_WEBHOOK_SECRET` (optional signature verification secret)
 - `PAY_CALLBACK_DEDUPE_TTL_MS` (default: `300000`)
+
+## Governance config overrides
+
+- `POT_CONTRIBUTION_WEIGHT` (default: `1`)
+- `POT_SCORING_POLICY` (default: `pot-weight-v1-TBD-by-governance/policy`)
