@@ -5,7 +5,7 @@ Date: 2026-07-31
 
 ## Current verdict
 
-**READY_PENDING_EVIDENCE**
+READY_PENDING_EVIDENCE
 
 ## Blocking conditions
 
