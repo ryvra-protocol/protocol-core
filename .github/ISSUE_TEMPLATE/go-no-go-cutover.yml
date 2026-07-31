@@ -1,0 +1,104 @@
+name: Production Go/No-Go Cutover
+about: Final production cutover decision artifact for protocol-core release candidates.
+title: "[GO/NO-GO] protocol-core cutover - <release-tag>"
+labels:
+  - release
+  - operations
+assignees: []
+body:
+  - type: input
+    id: release_candidate
+    attributes:
+      label: Release/tag candidate
+      description: Candidate tag or commit SHA under decision.
+      placeholder: v1.0.0-rc.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: required_checks
+    attributes:
+      label: Required checks status
+      description: Report status and links for lint-docs, version-consistency, typecheck, tests, dependency-security.
+      placeholder: |
+        lint-docs: PASS <link>
+        version-consistency: PASS <link>
+        typecheck: PASS <link>
+        tests: PASS <link>
+        dependency-security: PASS <link>
+    validations:
+      required: true
+
+  - type: textarea
+    id: staging_http_evidence
+    attributes:
+      label: Staging HTTP-mode evidence links
+      description: Include Actions run URLs, artifact links, and logs for HTTP-mode verification.
+      placeholder: |
+        - Staging run:
+        - Artifact bundle:
+        - Log excerpt:
+    validations:
+      required: true
+
+  - type: textarea
+    id: incident_rollback_owner
+    attributes:
+      label: Incident and rollback owner confirmation
+      description: Confirm incident commander and rollback commander ownership by role.
+      placeholder: |
+        Incident commander (role):
+        Rollback commander (role):
+        On-call escalation channel:
+    validations:
+      required: true
+
+  - type: textarea
+    id: abort_thresholds
+    attributes:
+      label: Abort thresholds confirmation
+      description: Confirm the operational thresholds and who is authorized to trigger abort.
+      placeholder: |
+        Timeout/error threshold:
+        Reconciliation lag threshold:
+        Duplicate-side-effect threshold:
+        Authorized abort role:
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: production_ready_checklist
+    attributes:
+      label: Production-ready checklist alignment (`docs/production-ready-checklist.md`)
+      options:
+        - label: Contracts integrity evidence confirmed
+          required: true
+        - label: Adapter reliability evidence confirmed
+          required: true
+        - label: CI enforcement checks confirmed
+          required: true
+        - label: Security posture evidence confirmed
+          required: true
+        - label: Release and rollback readiness confirmed
+          required: true
+        - label: Observability and runbook readiness confirmed
+          required: true
+
+  - type: dropdown
+    id: final_decision
+    attributes:
+      label: Final decision
+      description: Select the release gate decision.
+      options:
+        - GO
+        - NO-GO
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision_rationale
+    attributes:
+      label: Decision rationale and follow-up actions
+      description: Explain the decision, blockers (if any), and ordered next actions.
+    validations:
+      required: true

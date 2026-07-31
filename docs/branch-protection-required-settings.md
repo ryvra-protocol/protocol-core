@@ -17,22 +17,35 @@ Target branch: `main`
 
 ## Required status checks
 
-Use the exact check names from `.github/workflows/ci.yml`:
+Configure these exact required check names:
 
-- `Production CI / lint-docs`
-- `Production CI / typecheck`
-- `Production CI / tests`
-- `Production CI / dependency-security`
-- `Production CI / version-consistency`
+- `lint-docs`
+- `version-consistency`
+- `typecheck`
+- `tests`
+- `dependency-security`
 
-## Verification commands and evidence expectations
+UI note: GitHub may display workflow-prefixed forms such as `Production CI / lint-docs`; select the check entries that map to the exact names above.
 
-```bash
-git fetch origin main:refs/remotes/origin/main
-git log --oneline --max-count=1 refs/remotes/origin/main
-```
+## Verification procedure
 
-Expected evidence:
+1. Open GitHub settings:
+   - Repository -> **Settings** -> **Branches** -> `main` branch protection rule.
+2. Confirm fields:
+   - **Require a pull request before merging** = enabled
+   - **Require status checks to pass before merging** = enabled
+   - **Require branches to be up to date before merging** = enabled
+   - Required checks list includes the five names above.
+3. Open a recent PR to `main` and verify:
+   - Check suite shows the same check names.
+   - Merge remains blocked until all required checks are green.
+4. Capture evidence:
+   - Screenshot of branch protection rule check list.
+   - Screenshot of PR checks panel for a passing candidate.
 
-- PR UI shows all required checks green before merge.
-- Branch protection panel lists the required checks above.
+## Fallback steps if check names changed
+
+1. Open `.github/workflows/ci.yml` and confirm current job names under `jobs.*.name`.
+2. Update the branch protection required-check list to match job names exactly.
+3. Re-run a PR and verify checks appear with the updated names.
+4. Update this document with the new names and screenshot evidence.
