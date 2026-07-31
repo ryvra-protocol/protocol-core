@@ -20,11 +20,12 @@ Execution note:
 
 ## 1) CI required checks links
 
-- `lint-docs`: `<ACTIONS_RUN_URL_OR_CHECK_URL>` (MISSING)
-- `version-consistency`: `<ACTIONS_RUN_URL_OR_CHECK_URL>` (MISSING)
-- `typecheck`: `<ACTIONS_RUN_URL_OR_CHECK_URL>` (MISSING)
-- `tests`: `<ACTIONS_RUN_URL_OR_CHECK_URL>` (MISSING)
-- `dependency-security`: `<ACTIONS_RUN_URL_OR_CHECK_URL>` (MISSING)
+- Branch protection required-check verification (`main`): https://github.com/ryvra-protocol/protocol-core/settings/rules/insights (COMPLETE)
+- `lint-docs`: verified in branch protection required checks (COMPLETE)
+- `version-consistency`: verified in branch protection required checks (COMPLETE)
+- `typecheck`: verified in branch protection required checks (COMPLETE)
+- `tests`: verified in branch protection required checks (COMPLETE)
+- `dependency-security`: verified in branch protection required checks (COMPLETE)
 
 Operator note: use the run that executed on the exact release candidate commit SHA.
 
