@@ -1,6 +1,7 @@
 # Branch Protection Required Settings (`main`)
 
 Branch protection must be configured in GitHub UI because it is not fully enforceable in repository code.
+This is the final expected configuration for cutover readiness.
 
 ## Exact GitHub settings to apply
 
@@ -29,23 +30,42 @@ UI note: GitHub may display workflow-prefixed forms such as `Production CI / lin
 
 ## Verification procedure
 
-1. Open GitHub settings:
+1. Programmatic check (preferred when token access is available):
+   - `gh api repos/ryvra-protocol/protocol-core/branches/main/protection`
+   - Verify JSON includes:
+     - `required_pull_request_reviews.required_approving_review_count >= 1`
+     - `required_status_checks.strict == true`
+     - required checks include exactly:
+       - `lint-docs`
+       - `version-consistency`
+       - `typecheck`
+       - `tests`
+       - `dependency-security`
+2. UI fallback (required when API is unavailable):
    - Repository -> **Settings** -> **Branches** -> `main` branch protection rule.
-2. Confirm fields:
-   - **Require a pull request before merging** = enabled
-   - **Require status checks to pass before merging** = enabled
-   - **Require branches to be up to date before merging** = enabled
-   - Required checks list includes the five names above.
-3. Open a recent PR to `main` and verify:
-   - Check suite shows the same check names.
-   - Merge remains blocked until all required checks are green.
-4. Capture evidence:
-   - Screenshot of branch protection rule check list.
-   - Screenshot of PR checks panel for a passing candidate.
+   - Confirm all fields in the “Exact GitHub settings to apply” section are enabled.
+   - Confirm required checks list includes the five names above.
+3. PR behavior validation:
+   - Open a recent PR targeting `main`.
+   - Confirm merge is blocked until all five required checks are green.
+   - Confirm check suite labels map to these names (with or without workflow prefix).
+4. Evidence capture:
+   - Screenshot of branch protection rule configuration.
+   - Screenshot of PR checks panel on candidate SHA.
+   - Optional: JSON response snippet from `gh api` output.
 
-## Fallback steps if check names changed
+## Mismatch handling instructions
 
-1. Open `.github/workflows/ci.yml` and confirm current job names under `jobs.*.name`.
-2. Update the branch protection required-check list to match job names exactly.
-3. Re-run a PR and verify checks appear with the updated names.
-4. Update this document with the new names and screenshot evidence.
+1. If required checks differ from this document:
+   - Open `.github/workflows/ci.yml` and verify current `jobs.*.name` values.
+   - Update GitHub branch protection required checks to the exact workflow job names.
+2. If GitHub shows prefixed names only (for example `Production CI / lint-docs`):
+   - Select the prefixed entries that map to the five canonical names above.
+3. If one of the five required checks is absent from PR checks:
+   - Re-run the workflow on a PR targeting `main`.
+   - Confirm job exists/enabled in `.github/workflows/ci.yml`.
+   - Resolve workflow/config error before approving cutover.
+4. If API verification is blocked in execution environment:
+   - Record `API_UNAVAILABLE` in evidence notes.
+   - Complete the UI verification and screenshot capture steps.
+5. Do not mark final cutover `READY` until mismatches are resolved and evidence links are attached in `docs/cutover-evidence-index.md`.
