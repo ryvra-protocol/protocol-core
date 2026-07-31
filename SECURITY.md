@@ -1,19 +1,20 @@
 # Security Policy
 
-## Responsible Disclosure
+## Reporting a vulnerability
 
-If you discover a security issue, please disclose it responsibly by contacting the maintainers through private channels before public disclosure.
+Please report suspected vulnerabilities privately to repository maintainers before any public disclosure.
 
-Please include:
+Include:
 
 - affected component(s),
 - reproduction steps,
 - impact assessment,
-- suggested remediation (if available).
+- suggested remediation (if available),
+- whether exploitation is known or suspected in the wild.
 
 Do not publicly post exploit details until a fix or mitigation plan is in place.
 
-## Severity Handling (Draft)
+## Triage model
 
 Severity is triaged using a standard high-level model:
 
@@ -22,10 +23,25 @@ Severity is triaged using a standard high-level model:
 - **Medium:** meaningful weakness with constrained exploit conditions.
 - **Low:** limited impact or defense-in-depth issue.
 
-Target response expectations (subject to maintainer capacity):
+## SLA and response expectations
 
-- Initial acknowledgement: within 72 hours.
-- Triage and severity assignment: as soon as practical.
-- Remediation plan: based on severity and operational risk.
+- Initial acknowledgement:
+  - Critical/High: within 24 hours
+  - Medium/Low: within 72 hours
+- Severity assignment target:
+  - Critical/High: within 48 hours
+  - Medium/Low: within 5 business days
+- Remediation plan target:
+  - Critical: within 48 hours of triage
+  - High: within 5 business days of triage
+  - Medium/Low: in the next scheduled maintenance cycle unless risk requires earlier action
 
-Final response processes remain subject to legal review and operational constraints.
+## Coordinated response process
+
+1. Intake and acknowledge report.
+2. Assign severity and incident owner.
+3. Define mitigation/remediation plan and timeline.
+4. Validate fix and release with required CI/security checks.
+5. Coordinate disclosure timing with reporter when applicable.
+
+For incident execution workflow, use `docs/incident-response-template.md`.
