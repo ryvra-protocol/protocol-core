@@ -9,6 +9,7 @@ import type {
   LedgerTransaction,
   PaymentIntent,
   PolicyDecisionOutput,
+  SandboxGovernanceConfig,
   PolicyVersion,
   PostingId,
   ReferenceId,
@@ -28,6 +29,7 @@ import type { LedgerSettlementAdapter, LedgerSettlementMode } from "@ryvra/ledge
 
 import { createLedgerSettlementRuntime } from "./adapters/ledger-settlement.adapter.js";
 import { createPolicyRiskRuntime } from "./adapters/policy-risk.adapter.js";
+import { loadSandboxGovernanceConfig } from "./governance-config.js";
 
 export interface SandboxContext {
   now: () => string;
@@ -45,6 +47,7 @@ export interface SandboxContext {
   events: EventEnvelope<unknown>[];
   duplicateAttemptCount: number;
   failedTransitionsCount: number;
+  governanceConfig: SandboxGovernanceConfig;
   policyRiskMode: PolicyRiskMode;
   policyRiskVersion: PolicyVersion;
   policyRiskAdapter: PolicyRiskAdapter;
@@ -62,7 +65,8 @@ export interface CreateSandboxContextOptions {
 }
 
 export const createSandboxContext = (options: CreateSandboxContextOptions = {}): SandboxContext => {
-  const runtime = createPolicyRiskRuntime(options.env);
+  const governanceConfig = loadSandboxGovernanceConfig(options.env);
+  const runtime = createPolicyRiskRuntime(options.env, governanceConfig.policyRisk);
   const ledgerSettlementRuntime = createLedgerSettlementRuntime(options.env);
   const base = new Date("2026-01-01T00:00:00.000Z").getTime();
   let tick = 0;
@@ -87,6 +91,7 @@ export const createSandboxContext = (options: CreateSandboxContextOptions = {}):
     events: [],
     duplicateAttemptCount: 0,
     failedTransitionsCount: 0,
+    governanceConfig,
     policyRiskMode: options.policyRiskMode ?? runtime.mode,
     policyRiskVersion: options.policyRiskVersion ?? runtime.policyVersion,
     policyRiskAdapter: options.policyRiskAdapter ?? runtime.adapter,

@@ -1,4 +1,4 @@
-import { asPolicyVersion, type PolicyVersion } from "@ryvra/contracts";
+import { asPolicyVersion, type PolicyRiskThresholdsConfig, type PolicyVersion } from "@ryvra/contracts";
 import {
   createPolicyRiskAdapter,
   type PolicyRiskAdapter,
@@ -12,8 +12,6 @@ const DEFAULT_MAX_RETRIES = 2;
 const DEFAULT_RETRY_BASE_DELAY_MS = 50;
 const DEFAULT_FAILURE_THRESHOLD = 3;
 const DEFAULT_COOLDOWN_MS = 1000;
-const DEFAULT_MAX_ALLOWED_AMOUNT_MINOR = 1_000_000; // TBD by governance/policy
-const DEFAULT_MAX_ALLOWED_RISK_SCORE = 70; // TBD by governance/policy
 
 const parseInteger = (raw: string | undefined, fallback: number, field: string): number => {
   if (!raw) {
@@ -32,15 +30,18 @@ export interface PolicyRiskRuntime {
   adapter: PolicyRiskAdapter;
 }
 
-export const loadPolicyRiskAdapterConfig = (env: NodeJS.ProcessEnv = process.env): PolicyRiskAdapterConfig => {
+export const loadPolicyRiskAdapterConfig = (
+  env: NodeJS.ProcessEnv = process.env,
+  thresholds?: PolicyRiskThresholdsConfig
+): PolicyRiskAdapterConfig => {
   const mode = (env.POLICY_RISK_MODE ?? "deterministic") as PolicyRiskMode;
 
   if (mode === "deterministic") {
     return {
       mode,
       policyVersion: DEFAULT_POLICY_VERSION,
-      maxAllowedAmountMinor: DEFAULT_MAX_ALLOWED_AMOUNT_MINOR,
-      maxAllowedRiskScore: DEFAULT_MAX_ALLOWED_RISK_SCORE
+      maxAllowedAmountMinor: thresholds?.maxAllowedAmountMinor ?? 1_000_000,
+      maxAllowedRiskScore: thresholds?.maxAllowedRiskScore ?? 70
     };
   }
 
@@ -77,8 +78,11 @@ export const loadPolicyRiskAdapterConfig = (env: NodeJS.ProcessEnv = process.env
   throw new Error("POLICY_RISK_MODE must be deterministic or http.");
 };
 
-export const createPolicyRiskRuntime = (env: NodeJS.ProcessEnv = process.env): PolicyRiskRuntime => {
-  const config = loadPolicyRiskAdapterConfig(env);
+export const createPolicyRiskRuntime = (
+  env: NodeJS.ProcessEnv = process.env,
+  thresholds?: PolicyRiskThresholdsConfig
+): PolicyRiskRuntime => {
+  const config = loadPolicyRiskAdapterConfig(env, thresholds);
   return {
     mode: config.mode,
     policyVersion: config.mode === "deterministic" ? config.policyVersion : DEFAULT_POLICY_VERSION,

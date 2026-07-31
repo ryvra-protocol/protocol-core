@@ -26,5 +26,7 @@ Policy-risk adapter boundary for protocol-core Phase 2 rollout.
 
 ## Deterministic policy thresholds
 
-- `maxAllowedAmountMinor = 1_000_000` (`TBD by governance/policy`)
-- `maxAllowedRiskScore = 70` (`TBD by governance/policy`)
+- `maxAllowedAmountMinor` and `maxAllowedRiskScore` are supplied by runtime configuration.
+- Integration-sandbox defaults come from explicit governance config contracts and can be overridden via:
+  - `POLICY_RISK_MAX_ALLOWED_AMOUNT_MINOR` (default: `1000000`)
+  - `POLICY_RISK_MAX_ALLOWED_RISK_SCORE` (default: `70`)

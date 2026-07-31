@@ -63,7 +63,7 @@ Deterministic mode remains the default in CI and tests to preserve deterministic
 
 ## Known limitations and next steps
 
-- Policy-risk deterministic thresholds and PoT contribution weights are `TBD by governance/policy`.
+- Policy-risk deterministic thresholds and PoT contribution settings are surfaced via explicit governance config contracts (defaults remain governance-TBD).
 - No external settlement/ledger provider connectivity in this baseline.
 - Broaden scenario matrix for market flows, reversals, and partial failures in subsequent iterations.
 - Expand real adapter integration coverage across accounts, asset-registry, ledger-settlement, pay, and markets.

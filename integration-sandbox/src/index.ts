@@ -1,5 +1,6 @@
 export * from "./types.js";
 export * from "./context.js";
+export * from "./governance-config.js";
 export * from "./adapters/policy-risk.adapter.js";
 export * from "./adapters/ledger-settlement.adapter.js";
 export * from "./adapters/pay.adapter.js";
