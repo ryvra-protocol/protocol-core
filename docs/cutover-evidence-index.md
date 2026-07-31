@@ -15,6 +15,7 @@ Candidate commit SHA: `e502f6558c803169f3875ef3e3cc9c2fc2b1c472` (`origin/main`,
 | `pnpm test` | 2026-07-31T19:15:09Z | 2026-07-31T19:15:25Z | PASS |
 
 Execution note:
+
 - Earlier attempt failed because `pnpm` shim was unavailable in PATH; corrected by running `corepack enable`, then re-running all required commands above on the same candidate SHA.
 
 ## 1) CI required checks links
