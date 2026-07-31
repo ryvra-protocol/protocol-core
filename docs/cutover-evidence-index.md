@@ -20,7 +20,7 @@ Execution note:
 
 ## 1) CI required checks links
 
-- Branch protection required-check verification (`main`): https://github.com/ryvra-protocol/protocol-core/settings/rules/insights (COMPLETE)
+- Branch protection required-check verification (`main`): [rules insights](https://github.com/ryvra-protocol/protocol-core/settings/rules/insights) (COMPLETE)
 - `lint-docs`: verified in branch protection required checks (COMPLETE)
 - `version-consistency`: verified in branch protection required checks (COMPLETE)
 - `typecheck`: verified in branch protection required checks (COMPLETE)
