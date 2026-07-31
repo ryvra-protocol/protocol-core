@@ -7,14 +7,21 @@
   "scripts": {
     "lint": "markdownlint-cli2 \"README.md\" \"CONTRIBUTING.md\" \"SECURITY.md\" \"docs/**/*.md\"",
     "format": "prettier --check .",
-    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "check": "pnpm validate:versions && pnpm lint && pnpm typecheck && pnpm test",
     "typecheck": "pnpm --filter ./contracts run typecheck && pnpm --filter ./adapters/policy-risk run typecheck && pnpm --filter ./adapters/ledger-settlement run typecheck && pnpm --filter ./adapters/pay run typecheck && pnpm --filter ./integration-sandbox run typecheck",
-    "test": "pnpm --filter ./contracts run test && pnpm --filter ./adapters/policy-risk run test && pnpm --filter ./adapters/ledger-settlement run test && pnpm --filter ./adapters/pay run test && pnpm --filter ./integration-sandbox run test"
+    "test": "pnpm --filter ./contracts run test && pnpm --filter ./adapters/policy-risk run test && pnpm --filter ./adapters/ledger-settlement run test && pnpm --filter ./adapters/pay run test && pnpm --filter ./integration-sandbox run test",
+    "validate:versions": "node ./scripts/validate-version-consistency.mjs",
+    "verify:staging:http": "pnpm --filter ./adapters/policy-risk run test && pnpm --filter ./adapters/ledger-settlement run test && pnpm --filter ./adapters/pay run test && pnpm --filter ./integration-sandbox run test"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
     "markdownlint-cli2": "^0.14.0",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "js-yaml": "4.3.0"
+    }
   }
 }

@@ -1,4 +1,4 @@
-name: CI
+name: Production CI
 
 on:
   pull_request:
@@ -6,127 +6,118 @@ on:
     branches:
       - main
 
+concurrency:
+  group: production-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "10.16.0"
+
 jobs:
-  docs:
-    name: Markdown and docs checks
+  lint-docs:
+    name: lint-docs
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 10.16.0
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Lint markdown
         run: pnpm lint
-      - name: Verify required docs
+      - name: Verify required rollout docs
         run: |
-          test -f README.md
-          test -f docs/rfc-0001-aa-unified-assets.md
-          test -f docs/tokenomics-proof-of-transaction.md
-          test -f docs/tokenomics-faq.md
-          test -f docs/brand-narrative.md
-          test -f CONTRIBUTING.md
+          set -euo pipefail
+          test -f CHANGELOG.md
+          test -f docs/release-candidate.md
+          test -f docs/compatibility-matrix.md
+          test -f docs/staging-http-mode-verification.md
+          test -f docs/production-cutover-runbook.md
+          test -f docs/rollback-runbook.md
+          test -f docs/incident-response-template.md
+          test -f docs/dependency-policy.md
+          test -f docs/branch-protection-required-settings.md
+          test -f docs/production-ready-checklist.md
           test -f SECURITY.md
 
-  contracts:
-    name: Contracts typecheck and test
+  version-consistency:
+    name: version-consistency
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 10.16.0
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Typecheck contracts
-        run: pnpm --filter ./contracts run typecheck
-      - name: Test contracts
-        run: pnpm --filter ./contracts run test
+      - name: Validate version and toolchain consistency
+        run: pnpm validate:versions
 
-  policy-risk-adapter:
-    name: Policy-risk adapter typecheck and test
+  typecheck:
+    name: typecheck
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 10.16.0
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Typecheck policy-risk adapter
-        run: pnpm --filter ./adapters/policy-risk run typecheck
-      - name: Test policy-risk adapter
-        run: pnpm --filter ./adapters/policy-risk run test
+      - name: Run typecheck
+        run: pnpm typecheck
 
-  ledger-settlement-adapter:
-    name: Ledger-settlement adapter typecheck and test
+  tests:
+    name: tests
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 10.16.0
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Typecheck ledger-settlement adapter
-        run: pnpm --filter ./adapters/ledger-settlement run typecheck
-      - name: Test ledger-settlement adapter
-        run: pnpm --filter ./adapters/ledger-settlement run test
+      - name: Run tests
+        run: pnpm test
 
-  pay-adapter:
-    name: Pay adapter typecheck and test
+  dependency-security:
+    name: dependency-security
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 10.16.0
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Typecheck pay adapter
-        run: pnpm --filter ./adapters/pay run typecheck
-      - name: Test pay adapter
-        run: pnpm --filter ./adapters/pay run test
-
-  integration-sandbox:
-    name: Integration sandbox typecheck and test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.16.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Typecheck integration-sandbox
-        run: pnpm --filter ./integration-sandbox run typecheck
-      - name: Test integration-sandbox
-        run: pnpm --filter ./integration-sandbox run test
+      - name: Audit dependencies (high+)
+        run: pnpm audit --audit-level high
