@@ -1,10 +1,10 @@
-# Compatibility Matrix Baseline
+# Production Compatibility Baseline
 
 - Canonical contract schema baseline: `1.0.0` (`contracts/src/version.ts`)
 - Policy reason codes baseline: `1.0.0` (`contracts/src/version.ts`)
-- RC package baseline: `0.1.0` for workspace packages (`package.json` + workspace package manifests)
+- Workspace package baseline: `0.1.0` for workspace packages (`package.json` + workspace package manifests)
 
-## Organization repository baseline requirements
+## Organization repository production baseline requirements
 
 | Repository | Required `protocol-core` contract/schema baseline | Required policy reason code baseline | Status |
 | --- | --- | --- | --- |
