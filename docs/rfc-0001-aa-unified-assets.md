@@ -1,12 +1,12 @@
-# RFC-0001: Account Abstraction + Unified Assets Core (v1 Draft)
+# RFC-0001: Account Abstraction + Unified Assets Core (v1 Production Baseline)
 
-- **Status:** Draft
+- **Status:** Ratified (Production Baseline)
 - **Authors:** Ryvra Protocol Core Contributors
-- **Last Updated:** 2026-07-19
+- **Last Updated:** 2026-08-01
 
 ## 1. Scope and Motivation
 
-This RFC defines the foundational requirements for Ryvra's account abstraction and unified asset model. The objective is to establish a shared baseline for interface design, security posture, and settlement behavior before deep implementation.
+This RFC defines the foundational requirements for Ryvra's account abstraction and unified asset model. The objective is to establish a shared production baseline for interface design, security posture, and settlement behavior.
 
 Ryvra requires a common core that:
 
@@ -14,7 +14,7 @@ Ryvra requires a common core that:
 - represents assets consistently across pay and market interactions,
 - and produces verifiable contribution events for Proof of Transaction (PoT).
 
-This RFC is intentionally implementation-light and interface-first.
+This RFC is implementation-normative where required and interface-first where modularity is required.
 
 ## 2. EIP-4337 Account Abstraction Requirements
 
@@ -60,7 +60,7 @@ A session key policy SHOULD include:
 
 Ryvra defines a canonical unified asset schema to reduce fragmentation across subsystems.
 
-### Core fields (draft)
+### Core fields
 
 - `assetId`: canonical asset identifier
 - `assetType`: native, tokenized, derivative, or program-defined class
@@ -86,7 +86,7 @@ The ledger/settlement layer SHOULD provide:
 - reversible handling where protocol rules permit,
 - reconciliation hooks for accounting and audit.
 
-Minimum settlement states (draft):
+Minimum settlement states:
 
 1. `pending`
 2. `accepted`
@@ -100,7 +100,7 @@ All transitions MUST be attributable to an actor, system condition, or governanc
 
 PoT is event-driven. The core emits contribution events linked to valid transaction outcomes.
 
-### Event envelope (draft)
+### Event envelope
 
 - `eventId`
 - `timestamp`
