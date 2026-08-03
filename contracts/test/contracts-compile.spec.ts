@@ -7,21 +7,24 @@ import {
   CANONICAL_EVENT_ENVELOPE_FIELDS,
   CANONICAL_AMOUNT_FIELDS,
   CANONICAL_ID_FIELDS,
-  ENTRY_POINT_REF_FIELDS,
   CHAIN_ASSET_REF_FIELDS,
   CONTRACT_SCHEMA_VERSION,
+  ENTRY_POINT_REF_FIELDS,
   EXPOSURE_SNAPSHOT_FIELDS,
   OrderMarketState,
   PAYMASTER_REF_FIELDS,
   PaymentIntentState,
-  PR8_ERC4337_SCHEMA_VERSION,
   POLICY_REASON_CODES_VERSION,
+  PR8_ERC4337_SCHEMA_VERSION,
   PR7_UNIFIED_ASSET_SCHEMA_VERSION,
   PolicyDecision,
   SMART_ACCOUNT_REF_FIELDS,
   SPONSORSHIP_POLICY_DECISION_FIELDS,
   SPONSORSHIP_POLICY_INPUT_FIELDS,
   SettlementState,
+  UserOpFailureCategory,
+  UserOpLifecycleStatus,
+  UserOpSimulationStatus,
   UNIFIED_ASSET_FIELDS,
   UNIFIED_BALANCE_FIELDS,
   USER_OPERATION_CANONICAL_FIELDS,
@@ -232,6 +235,17 @@ test("contracts compile and expose canonical vocabulary", () => {
     "expired",
     "failed",
     "settled"
+  ]);
+  assert.deepEqual(Object.values(UserOpLifecycleStatus), ["submitted", "simulated", "included", "failed", "finalized"]);
+  assert.deepEqual(Object.values(UserOpSimulationStatus), ["success", "failure"]);
+  assert.deepEqual(Object.values(UserOpFailureCategory), [
+    "validation",
+    "execution",
+    "paymaster",
+    "bundler",
+    "inclusion_timeout",
+    "reorg",
+    "unknown"
   ]);
   assert.equal(SettlementState.reconciled, "reconciled");
   assert.equal(validatePolicyReasonCodes(["DUPLICATE_REFERENCE_REPLAY"]), true);
