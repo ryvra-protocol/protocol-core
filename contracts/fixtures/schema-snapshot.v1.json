@@ -1,0 +1,231 @@
+{
+  "versions": {
+    "CONTRACT_SCHEMA_VERSION": "1.0.0",
+    "POLICY_REASON_CODES_VERSION": "1.0.0",
+    "PR7_UNIFIED_ASSET_SCHEMA_VERSION": "1.0.0-pr7",
+    "PR8_ERC4337_SCHEMA_VERSION": "1.0.0-pr8"
+  },
+  "exportSurface": [
+    "./ids.js",
+    "./enums.js",
+    "./policy.js",
+    "./payments.js",
+    "./ledger.js",
+    "./events.js",
+    "./version.js",
+    "./canonical.js",
+    "./governance.js",
+    "./unified-assets.js",
+    "./aa4337.js",
+    "./userop-events.js"
+  ],
+  "canonicalFields": {
+    "CANONICAL_ID_FIELDS": [
+      "account_id",
+      "asset_id",
+      "ledger_event_id",
+      "posting_id",
+      "reference_id",
+      "idempotency_key",
+      "policy_version",
+      "correlation_id"
+    ],
+    "CANONICAL_EVENT_ENVELOPE_FIELDS": [
+      "event_id",
+      "correlation_id",
+      "reference_id",
+      "event_type",
+      "timestamp",
+      "payload"
+    ],
+    "CHAIN_ASSET_REF_FIELDS": [
+      "chain_id",
+      "contract_ref",
+      "token_standard"
+    ],
+    "CANONICAL_AMOUNT_FIELDS": [
+      "amount_minor",
+      "amount_decimal",
+      "decimals"
+    ],
+    "UNIFIED_ASSET_FIELDS": [
+      "schema_version",
+      "asset_id",
+      "asset_type",
+      "chain_asset_ref",
+      "decimals",
+      "settlement_class",
+      "risk_flags",
+      "metadata_ref"
+    ],
+    "UNIFIED_BALANCE_FIELDS": [
+      "account_id",
+      "unified_asset",
+      "quantity",
+      "as_of"
+    ],
+    "ASSET_POSITION_FIELDS": [
+      "account_id",
+      "asset_id",
+      "available",
+      "locked",
+      "pending_settlement",
+      "as_of"
+    ],
+    "EXPOSURE_SNAPSHOT_FIELDS": [
+      "schema_version",
+      "account_id",
+      "positions",
+      "gross_exposure",
+      "net_exposure",
+      "captured_at"
+    ],
+    "SMART_ACCOUNT_REF_FIELDS": [
+      "chain_id",
+      "account_address",
+      "factory_address",
+      "implementation_ref",
+      "account_version"
+    ],
+    "ENTRY_POINT_REF_FIELDS": [
+      "chain_id",
+      "entry_point_address",
+      "entry_point_version"
+    ],
+    "BUNDLER_REF_FIELDS": [
+      "chain_id",
+      "bundler_id",
+      "endpoint",
+      "software_version"
+    ],
+    "PAYMASTER_REF_FIELDS": [
+      "chain_id",
+      "paymaster_address",
+      "paymaster_service_id",
+      "sponsorship_mode"
+    ],
+    "USER_OPERATION_CANONICAL_FIELDS": [
+      "chain_id",
+      "entry_point",
+      "user_op_hash",
+      "sender",
+      "nonce",
+      "init_code_hash",
+      "call_data_hash",
+      "call_gas_limit",
+      "verification_gas_limit",
+      "pre_verification_gas",
+      "max_fee_per_gas",
+      "max_priority_fee_per_gas",
+      "paymaster_and_data_hash",
+      "signature_hash",
+      "idempotency_key",
+      "reference_id",
+      "correlation_id",
+      "policy_version",
+      "submitted_at"
+    ],
+    "SPONSORSHIP_POLICY_INPUT_FIELDS": [
+      "user_operation",
+      "smart_account",
+      "paymaster",
+      "sponsor_budget_minor",
+      "max_fee_per_gas"
+    ],
+    "SPONSORSHIP_POLICY_DECISION_FIELDS": [
+      "decision",
+      "sponsor_ref",
+      "reason_codes",
+      "policy_version",
+      "evaluated_at"
+    ],
+    "USER_OPERATION_SIMULATION_RESULT_FIELDS": [
+      "user_op_hash",
+      "chain_id",
+      "entry_point",
+      "outcome",
+      "status",
+      "estimated_pre_verification_gas",
+      "estimated_verification_gas",
+      "estimated_call_gas",
+      "failure_reason_code",
+      "revert_data",
+      "simulated_at"
+    ],
+    "USER_OPERATION_REPLAY_RECORD_FIELDS": [
+      "chain_id",
+      "entry_point_address",
+      "sender",
+      "nonce",
+      "user_op_hash",
+      "idempotency_key",
+      "dedupe_scope",
+      "first_seen_at",
+      "expires_at"
+    ],
+    "USER_OPERATION_EVENT_TYPES": [
+      "userop.submitted",
+      "userop.simulated",
+      "userop.included",
+      "userop.failed",
+      "userop.finalized"
+    ],
+    "USER_OPERATION_SUBMITTED_PAYLOAD_FIELDS": [
+      "status",
+      "user_op_hash",
+      "user_operation",
+      "smart_account",
+      "bundler"
+    ],
+    "USER_OPERATION_SIMULATED_PAYLOAD_FIELDS": [
+      "status",
+      "user_op_hash",
+      "simulation"
+    ],
+    "USER_OPERATION_INCLUDED_PAYLOAD_FIELDS": [
+      "status",
+      "user_op_hash",
+      "entry_point",
+      "transaction_hash",
+      "block_number",
+      "block_hash",
+      "included_at"
+    ],
+    "USER_OPERATION_FAILED_PAYLOAD_FIELDS": [
+      "status",
+      "user_op_hash",
+      "stage",
+      "reason_code",
+      "retryable",
+      "failed_at"
+    ],
+    "USER_OPERATION_FINALIZED_PAYLOAD_FIELDS": [
+      "status",
+      "user_op_hash",
+      "transaction_hash",
+      "finalized_block_number",
+      "confirmations",
+      "finalized_at"
+    ]
+  },
+  "enumValues": {
+    "UserOperationLifecycleStatus": [
+      "submitted",
+      "simulated",
+      "included",
+      "failed",
+      "finalized",
+      "dropped"
+    ],
+    "UserOperationSimulationOutcome": [
+      "success",
+      "validation_reverted",
+      "execution_reverted",
+      "paymaster_rejected",
+      "aggregator_rejected",
+      "malformed",
+      "throttled",
+      "internal_error"
+    ]
+  }
+}

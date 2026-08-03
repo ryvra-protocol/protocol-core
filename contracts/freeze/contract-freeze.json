@@ -1,0 +1,29 @@
+{
+  "freezeStage": "H4",
+  "freezeLabel": "PR7/PR8 canonical contract freeze",
+  "canonicalVersions": {
+    "CONTRACT_SCHEMA_VERSION": "1.0.0",
+    "POLICY_REASON_CODES_VERSION": "1.0.0",
+    "PR7_UNIFIED_ASSET_SCHEMA_VERSION": "1.0.0-pr7",
+    "PR8_ERC4337_SCHEMA_VERSION": "1.0.0-pr8"
+  },
+  "exportSurface": [
+    "./ids.js",
+    "./enums.js",
+    "./policy.js",
+    "./payments.js",
+    "./ledger.js",
+    "./events.js",
+    "./version.js",
+    "./canonical.js",
+    "./governance.js",
+    "./unified-assets.js",
+    "./aa4337.js",
+    "./userop-events.js"
+  ],
+  "changePolicy": {
+    "patch": "No export-surface or field-shape changes; bug fixes and docs only.",
+    "minor": "Additive-only contract updates (optional fields and appended enum/reason-code values) with fixture and compatibility-matrix updates.",
+    "major": "Breaking contract changes require major version bump plus coordinated downstream release signoff before merge."
+  }
+}

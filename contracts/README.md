@@ -7,8 +7,20 @@ Canonical cross-repo protocol contracts and state vocabularies for deterministic
 - Baseline tag for cross-repo rollout: `v0.2.1-contract-hardening`.
 - `CONTRACT_SCHEMA_VERSION`: version for canonical interfaces/enums.
 - `POLICY_REASON_CODES_VERSION`: version for reason-code taxonomy.
-- Backward-compatible additions can be introduced as optional fields and appended enum/code values.
-- Breaking changes require a version bump and coordinated rollout across dependent repositories.
+- `PR7_UNIFIED_ASSET_SCHEMA_VERSION`: version for PR7 unified-asset schema boundary.
+- `PR8_ERC4337_SCHEMA_VERSION`: version for PR8 ERC-4337 schema boundary.
+- Freeze manifest for H4 hardening: `contracts/freeze/contract-freeze.json`.
+- Backward-compatible additions can be introduced only as optional fields and appended enum/code values.
+- Breaking changes require a major version bump and coordinated rollout across dependent repositories.
+
+## Contract semver/change policy
+
+- Patch updates (`x.y.z+1`) are limited to implementation/docs/test fixes and must not alter export surface or contract field shapes.
+- Minor updates (`x.y+1.0`) are additive-only and must include:
+  - updates to `contracts/freeze/contract-freeze.json` change policy references,
+  - updates to `contracts/fixtures/schema-snapshot.v1.json` and compatibility fixtures,
+  - updated `docs/compatibility-matrix.md` enforcement evidence.
+- Major updates (`x+1.0.0`) are required for any breaking field removal/rename/type tightening or export-surface removal and require downstream signoff before merge.
 
 ## Adoption guidance for module repositories
 
