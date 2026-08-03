@@ -31,3 +31,20 @@ Canonical cross-repo protocol contracts and state vocabularies for deterministic
   - adding `UnifiedAsset` alongside existing `asset_id` usage,
   - adopting `CanonicalAmount` in new balance/exposure payloads first,
   - then standardizing on `UnifiedBalance`, `AssetPosition`, and `ExposureSnapshot` for cross-module snapshots.
+
+## PR8 ERC-4337 canonical boundary ownership
+
+- `protocol-core` owns canonical type contracts and event vocabulary under `contracts/src/userops.ts`.
+- `accounts` owns smart-account and validation implementation details.
+- `pay` owns paymaster sponsorship execution behavior and policy enforcement runtime.
+- `markets`, `ledger-settlement`, and `policy-risk` consume PR8 contracts as read-only integration boundaries.
+- Runtime orchestration (bundler clients, paymaster clients, execution state machines) remains out of scope for this package.
+
+## PR8 compatibility and migration notes
+
+- `PR8_ERC4337_SCHEMA_VERSION` marks the canonical ERC-4337 contract additions.
+- Additions are additive/non-breaking: prior exports remain unchanged, and PR8 surfaces are exposed as new contracts/enums/constants.
+- Consumers can migrate incrementally by:
+  - adopting `UserOperationCanonical` and actor refs (`SmartAccountRef`, `EntryPointRef`, `BundlerRef`, `PaymasterRef`),
+  - wiring canonical lifecycle/simulation enums (`UserOpLifecycleStatus`, `UserOpSimulationStatus`, `UserOpFailureCategory`),
+  - emitting canonical userop event contracts (`userop.submitted`, `userop.simulated`, `userop.included`, `userop.failed`, `userop.finalized`) with deterministic field ordering constants.
