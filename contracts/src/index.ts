@@ -8,4 +8,5 @@ export * from "./version.js";
 export * from "./canonical.js";
 export * from "./governance.js";
 export * from "./unified-assets.js";
-export * from "./userops.js";
+export * from "./aa4337.js";
+export * from "./userop-events.js";

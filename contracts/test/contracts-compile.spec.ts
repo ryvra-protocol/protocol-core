@@ -4,7 +4,6 @@ import assert from "node:assert/strict";
 import {
   ASSET_POSITION_FIELDS,
   BUNDLER_REF_FIELDS,
-  CANONICAL_USER_OPERATION_FIELDS,
   CANONICAL_EVENT_ENVELOPE_FIELDS,
   CANONICAL_AMOUNT_FIELDS,
   CANONICAL_ID_FIELDS,
@@ -13,33 +12,32 @@ import {
   ENTRY_POINT_REF_FIELDS,
   EXPOSURE_SNAPSHOT_FIELDS,
   OrderMarketState,
+  PAYMASTER_REF_FIELDS,
   PaymentIntentState,
   POLICY_REASON_CODES_VERSION,
   PR8_ERC4337_SCHEMA_VERSION,
   PR7_UNIFIED_ASSET_SCHEMA_VERSION,
   PolicyDecision,
-  SettlementState,
   SMART_ACCOUNT_REF_FIELDS,
+  SPONSORSHIP_POLICY_DECISION_FIELDS,
+  SPONSORSHIP_POLICY_INPUT_FIELDS,
+  SettlementState,
   UserOpFailureCategory,
   UserOpLifecycleStatus,
   UserOpSimulationStatus,
   UNIFIED_ASSET_FIELDS,
   UNIFIED_BALANCE_FIELDS,
-  USEROP_EVENT_FAILED,
-  USEROP_EVENT_FINALIZED,
-  USEROP_EVENT_INCLUDED,
-  USEROP_EVENT_SIMULATED,
-  USEROP_EVENT_SUBMITTED,
-  USEROP_EVENT_TYPES,
-  USEROP_FAILED_EVENT_FIELDS,
-  USEROP_FINALIZED_EVENT_FIELDS,
-  USEROP_INCLUDED_EVENT_FIELDS,
-  USEROP_REPLAY_BOUNDARY_FIELDS,
-  USEROP_SIMULATED_EVENT_FIELDS,
-  USEROP_SIMULATION_RESULT_FIELDS,
-  USEROP_SPONSORSHIP_POLICY_FIELDS,
-  USEROP_SUBMITTED_EVENT_FIELDS,
-  PAYMASTER_REF_FIELDS,
+  USER_OPERATION_CANONICAL_FIELDS,
+  USER_OPERATION_EVENT_TYPES,
+  USER_OPERATION_FAILED_PAYLOAD_FIELDS,
+  USER_OPERATION_FINALIZED_PAYLOAD_FIELDS,
+  USER_OPERATION_INCLUDED_PAYLOAD_FIELDS,
+  UserOperationLifecycleStatus,
+  USER_OPERATION_REPLAY_RECORD_FIELDS,
+  USER_OPERATION_SIMULATED_PAYLOAD_FIELDS,
+  USER_OPERATION_SIMULATION_RESULT_FIELDS,
+  USER_OPERATION_SUBMITTED_PAYLOAD_FIELDS,
+  UserOperationSimulationOutcome,
   validatePolicyDecisionOutput,
   validatePolicyReasonCodes,
   categorizePolicyReasonCode
@@ -90,112 +88,134 @@ test("contracts compile and expose canonical vocabulary", () => {
     "net_exposure",
     "captured_at"
   ]);
-  assert.deepEqual(SMART_ACCOUNT_REF_FIELDS, ["chain_id", "account_address", "account_version", "implementation_ref"]);
+  assert.deepEqual(SMART_ACCOUNT_REF_FIELDS, [
+    "chain_id",
+    "account_address",
+    "factory_address",
+    "implementation_ref",
+    "account_version"
+  ]);
   assert.deepEqual(ENTRY_POINT_REF_FIELDS, ["chain_id", "entry_point_address", "entry_point_version"]);
-  assert.deepEqual(BUNDLER_REF_FIELDS, ["chain_id", "bundler_id", "endpoint_ref"]);
-  assert.deepEqual(PAYMASTER_REF_FIELDS, ["chain_id", "paymaster_address", "paymaster_version", "sponsor_ref"]);
-  assert.deepEqual(CANONICAL_USER_OPERATION_FIELDS, [
-    "schema_version",
+  assert.deepEqual(BUNDLER_REF_FIELDS, ["chain_id", "bundler_id", "endpoint", "software_version"]);
+  assert.deepEqual(PAYMASTER_REF_FIELDS, ["chain_id", "paymaster_address", "paymaster_service_id", "sponsorship_mode"]);
+  assert.deepEqual(USER_OPERATION_CANONICAL_FIELDS, [
     "chain_id",
     "entry_point",
-    "smart_account",
-    "bundler",
-    "paymaster",
+    "user_op_hash",
     "sender",
     "nonce",
-    "call_data_hex",
+    "init_code_hash",
+    "call_data_hash",
     "call_gas_limit",
     "verification_gas_limit",
     "pre_verification_gas",
     "max_fee_per_gas",
     "max_priority_fee_per_gas",
-    "paymaster_data_hex",
-    "signature_hex",
-    "user_operation_hash",
-    "reference_id",
+    "paymaster_and_data_hash",
+    "signature_hash",
     "idempotency_key",
+    "reference_id",
     "correlation_id",
-    "lifecycle_status",
+    "policy_version",
     "submitted_at"
   ]);
-  assert.deepEqual(USEROP_SPONSORSHIP_POLICY_FIELDS, [
-    "policy_id",
-    "chain_id",
+  assert.deepEqual(SPONSORSHIP_POLICY_INPUT_FIELDS, [
+    "user_operation",
+    "smart_account",
     "paymaster",
-    "sponsorship_mode",
-    "max_sponsored_fee_per_gas",
-    "max_sponsored_total_cost_minor",
-    "allowed_accounts",
-    "denied_accounts",
-    "valid_from",
-    "valid_until"
+    "sponsor_budget_minor",
+    "max_fee_per_gas"
   ]);
-  assert.deepEqual(USEROP_SIMULATION_RESULT_FIELDS, [
+  assert.deepEqual(SPONSORSHIP_POLICY_DECISION_FIELDS, [
+    "decision",
+    "sponsor_ref",
+    "reason_codes",
+    "policy_version",
+    "evaluated_at"
+  ]);
+  assert.deepEqual(USER_OPERATION_SIMULATION_RESULT_FIELDS, [
+    "user_op_hash",
     "chain_id",
     "entry_point",
-    "user_operation_hash",
-    "simulation_status",
-    "lifecycle_status",
-    "failure_category",
-    "failure_reason",
-    "revert_data_hex",
-    "estimated_call_gas_limit",
+    "outcome",
+    "status",
     "estimated_pre_verification_gas",
-    "estimated_verification_gas_limit",
+    "estimated_verification_gas",
+    "estimated_call_gas",
+    "failure_reason_code",
+    "revert_data",
     "simulated_at"
   ]);
-  assert.deepEqual(USEROP_REPLAY_BOUNDARY_FIELDS, [
+  assert.deepEqual(USER_OPERATION_REPLAY_RECORD_FIELDS, [
     "chain_id",
+    "entry_point_address",
     "sender",
     "nonce",
-    "user_operation_hash",
+    "user_op_hash",
     "idempotency_key",
-    "replay_window_ref",
-    "duplicate_detected"
+    "dedupe_scope",
+    "first_seen_at",
+    "expires_at"
   ]);
-  assert.deepEqual(USEROP_EVENT_TYPES, [
-    USEROP_EVENT_SUBMITTED,
-    USEROP_EVENT_SIMULATED,
-    USEROP_EVENT_INCLUDED,
-    USEROP_EVENT_FAILED,
-    USEROP_EVENT_FINALIZED
+  assert.deepEqual(USER_OPERATION_EVENT_TYPES, [
+    "userop.submitted",
+    "userop.simulated",
+    "userop.included",
+    "userop.failed",
+    "userop.finalized"
   ]);
-  assert.deepEqual(USEROP_SUBMITTED_EVENT_FIELDS, ["event_type", "lifecycle_status", "user_operation", "received_at"]);
-  assert.deepEqual(USEROP_SIMULATED_EVENT_FIELDS, [
-    "event_type",
-    "lifecycle_status",
-    "user_operation_hash",
-    "simulation_result"
+  assert.deepEqual(USER_OPERATION_SUBMITTED_PAYLOAD_FIELDS, [
+    "status",
+    "user_op_hash",
+    "user_operation",
+    "smart_account",
+    "bundler"
   ]);
-  assert.deepEqual(USEROP_INCLUDED_EVENT_FIELDS, [
-    "event_type",
-    "lifecycle_status",
-    "user_operation_hash",
-    "chain_id",
+  assert.deepEqual(USER_OPERATION_SIMULATED_PAYLOAD_FIELDS, ["status", "user_op_hash", "simulation"]);
+  assert.deepEqual(USER_OPERATION_INCLUDED_PAYLOAD_FIELDS, [
+    "status",
+    "user_op_hash",
+    "entry_point",
     "transaction_hash",
     "block_number",
+    "block_hash",
     "included_at"
   ]);
-  assert.deepEqual(USEROP_FAILED_EVENT_FIELDS, [
-    "event_type",
-    "lifecycle_status",
-    "user_operation_hash",
-    "chain_id",
-    "failure_category",
-    "failure_reason",
+  assert.deepEqual(USER_OPERATION_FAILED_PAYLOAD_FIELDS, [
+    "status",
+    "user_op_hash",
+    "stage",
+    "reason_code",
+    "retryable",
     "failed_at"
   ]);
-  assert.deepEqual(USEROP_FINALIZED_EVENT_FIELDS, [
-    "event_type",
-    "lifecycle_status",
-    "user_operation_hash",
-    "chain_id",
+  assert.deepEqual(USER_OPERATION_FINALIZED_PAYLOAD_FIELDS, [
+    "status",
+    "user_op_hash",
     "transaction_hash",
-    "block_number",
-    "finality_confirmations",
+    "finalized_block_number",
+    "confirmations",
     "finalized_at"
   ]);
   assert.equal(PolicyDecision.ALLOW, "ALLOW");
+  assert.deepEqual(Object.values(UserOperationLifecycleStatus), [
+    "submitted",
+    "simulated",
+    "included",
+    "failed",
+    "finalized",
+    "dropped"
+  ]);
+  assert.deepEqual(Object.values(UserOperationSimulationOutcome), [
+    "success",
+    "validation_reverted",
+    "execution_reverted",
+    "paymaster_rejected",
+    "aggregator_rejected",
+    "malformed",
+    "throttled",
+    "internal_error"
+  ]);
   assert.deepEqual(Object.values(PaymentIntentState), [
     "created",
     "authorized",
