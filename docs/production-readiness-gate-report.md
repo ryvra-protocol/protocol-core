@@ -15,6 +15,13 @@ Production candidate: `HEAD` (post-staging gate confirmation)
   - `/home/runner/work/protocol-core/protocol-core/docs/staging-readiness-gate-report.md`
   - `/home/runner/work/protocol-core/protocol-core/docs/reliability-scenarios-matrix.md`
   - `/home/runner/work/protocol-core/protocol-core/docs/integration-sandbox-e2e.md`
+- H4 freeze/hardening operationalization evidence:
+  - `contracts/freeze/contract-freeze.json`
+  - `contracts/fixtures/schema-snapshot.v1.json`
+  - `contracts/fixtures/downstream-compatibility-fixtures.json`
+  - `contracts/test/schema-snapshot.spec.ts`
+  - `contracts/test/downstream-compatibility.spec.ts`
+  - `docs/compatibility-matrix.md`
 
 ## Gate checklist
 
@@ -37,6 +44,7 @@ Production candidate: `HEAD` (post-staging gate confirmation)
 
 - **Overall decision: GO**
 - **PASS/FAIL counts:** 12 PASS / 0 FAIL
+- **H4 hardening stage status:** IN EXECUTION (GO/NO-GO decision already approved; this stage applies freeze/enforcement controls)
 
 ### Top 5 residual risks
 

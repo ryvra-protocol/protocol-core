@@ -68,6 +68,17 @@ Operator note: include immutable run URLs and artifact IDs.
 - Remote tag URL: `<TAG_URL>` (MISSING)
 - Release/tarball evidence (if generated): `<RELEASE_OR_ASSET_LINK>` (MISSING)
 
+## 8) H4 contract freeze and compatibility hardening artifacts
+
+- Freeze manifest (PR7/PR8 versions + export surface): `contracts/freeze/contract-freeze.json`
+- Downstream compatibility fixture: `contracts/fixtures/downstream-compatibility-fixtures.json`
+- Deterministic schema snapshot fixture: `contracts/fixtures/schema-snapshot.v1.json`
+- CI freeze/compatibility guardrail implementation: `scripts/validate-version-consistency.mjs`
+- Deterministic snapshot tests: `contracts/test/schema-snapshot.spec.ts`, `contracts/test/downstream-compatibility.spec.ts`
+- Compatibility matrix enforcement record: `docs/compatibility-matrix.md`
+
+Note: GO/NO-GO approval was completed before H4; these artifacts operationalize that approved decision and do not reopen it.
+
 ## Link capture instructions
 
 1. Open the Actions run on the candidate commit.

@@ -1,0 +1,108 @@
+{
+  "consumers": [
+    {
+      "repository": "ryvra-protocol/pay",
+      "requiredVersions": {
+        "contractSchema": "1.0.0",
+        "policyReasonCodes": "1.0.0",
+        "pr7UnifiedAsset": "1.0.0-pr7",
+        "pr8Erc4337": "1.0.0-pr8"
+      },
+      "requiredChecks": [
+        "consumer-contract-compile",
+        "consumer-schema-fixture-check"
+      ]
+    },
+    {
+      "repository": "ryvra-protocol/markets",
+      "requiredVersions": {
+        "contractSchema": "1.0.0",
+        "policyReasonCodes": "1.0.0",
+        "pr7UnifiedAsset": "1.0.0-pr7",
+        "pr8Erc4337": "1.0.0-pr8"
+      },
+      "requiredChecks": [
+        "consumer-contract-compile",
+        "consumer-schema-fixture-check"
+      ]
+    },
+    {
+      "repository": "ryvra-protocol/policy-risk",
+      "requiredVersions": {
+        "contractSchema": "1.0.0",
+        "policyReasonCodes": "1.0.0",
+        "pr7UnifiedAsset": "1.0.0-pr7",
+        "pr8Erc4337": "1.0.0-pr8"
+      },
+      "requiredChecks": [
+        "consumer-contract-compile",
+        "consumer-schema-fixture-check"
+      ]
+    },
+    {
+      "repository": "ryvra-protocol/ledger-settlement",
+      "requiredVersions": {
+        "contractSchema": "1.0.0",
+        "policyReasonCodes": "1.0.0",
+        "pr7UnifiedAsset": "1.0.0-pr7",
+        "pr8Erc4337": "1.0.0-pr8"
+      },
+      "requiredChecks": [
+        "consumer-contract-compile",
+        "consumer-schema-fixture-check"
+      ]
+    },
+    {
+      "repository": "ryvra-protocol/accounts",
+      "requiredVersions": {
+        "contractSchema": "1.0.0",
+        "policyReasonCodes": "1.0.0",
+        "pr7UnifiedAsset": "1.0.0-pr7",
+        "pr8Erc4337": "1.0.0-pr8"
+      },
+      "requiredChecks": [
+        "consumer-contract-compile",
+        "consumer-schema-fixture-check"
+      ]
+    },
+    {
+      "repository": "ryvra-protocol/asset-registry",
+      "requiredVersions": {
+        "contractSchema": "1.0.0",
+        "policyReasonCodes": "1.0.0",
+        "pr7UnifiedAsset": "1.0.0-pr7",
+        "pr8Erc4337": "1.0.0-pr8"
+      },
+      "requiredChecks": [
+        "consumer-contract-compile",
+        "consumer-schema-fixture-check"
+      ]
+    },
+    {
+      "repository": "ryvra-protocol/website",
+      "requiredVersions": {
+        "contractSchema": "1.0.0",
+        "policyReasonCodes": "1.0.0",
+        "pr7UnifiedAsset": "1.0.0-pr7",
+        "pr8Erc4337": "1.0.0-pr8"
+      },
+      "requiredChecks": [
+        "consumer-contract-compile",
+        "consumer-schema-fixture-check"
+      ]
+    },
+    {
+      "repository": "ryvra-protocol/docs",
+      "requiredVersions": {
+        "contractSchema": "1.0.0",
+        "policyReasonCodes": "1.0.0",
+        "pr7UnifiedAsset": "1.0.0-pr7",
+        "pr8Erc4337": "1.0.0-pr8"
+      },
+      "requiredChecks": [
+        "consumer-contract-compile",
+        "consumer-schema-fixture-check"
+      ]
+    }
+  ]
+}

@@ -31,6 +31,13 @@ GO
 
 Production RC cut is authorized.
 
+## Post-approval operationalization artifacts (H4)
+
+- Contract freeze policy and export-surface baseline: `contracts/freeze/contract-freeze.json`
+- Compatibility enforcement fixtures: `contracts/fixtures/downstream-compatibility-fixtures.json`
+- Deterministic schema snapshot fixture/checks: `contracts/fixtures/schema-snapshot.v1.json`, `contracts/test/schema-snapshot.spec.ts`
+- Compatibility matrix + rollback mismatch guidance: `docs/compatibility-matrix.md`, `docs/rollback-runbook.md`
+
 ## Rollback commander and on-call contacts (role-based)
 
 - Rollback commander: Release Engineering Lead (role)
