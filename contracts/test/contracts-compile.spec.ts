@@ -2,14 +2,21 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  ASSET_POSITION_FIELDS,
   CANONICAL_EVENT_ENVELOPE_FIELDS,
+  CANONICAL_AMOUNT_FIELDS,
   CANONICAL_ID_FIELDS,
+  CHAIN_ASSET_REF_FIELDS,
   CONTRACT_SCHEMA_VERSION,
+  EXPOSURE_SNAPSHOT_FIELDS,
   OrderMarketState,
   PaymentIntentState,
   POLICY_REASON_CODES_VERSION,
+  PR7_UNIFIED_ASSET_SCHEMA_VERSION,
   PolicyDecision,
   SettlementState,
+  UNIFIED_ASSET_FIELDS,
+  UNIFIED_BALANCE_FIELDS,
   validatePolicyDecisionOutput,
   validatePolicyReasonCodes,
   categorizePolicyReasonCode
@@ -18,6 +25,7 @@ import {
 test("contracts compile and expose canonical vocabulary", () => {
   assert.equal(CONTRACT_SCHEMA_VERSION, "1.0.0");
   assert.equal(POLICY_REASON_CODES_VERSION, "1.0.0");
+  assert.equal(PR7_UNIFIED_ASSET_SCHEMA_VERSION, "1.0.0-pr7");
   assert.deepEqual(CANONICAL_ID_FIELDS, [
     "account_id",
     "asset_id",
@@ -35,6 +43,28 @@ test("contracts compile and expose canonical vocabulary", () => {
     "event_type",
     "timestamp",
     "payload"
+  ]);
+  assert.deepEqual(CHAIN_ASSET_REF_FIELDS, ["chain_id", "contract_ref", "token_standard"]);
+  assert.deepEqual(CANONICAL_AMOUNT_FIELDS, ["amount_minor", "amount_decimal", "decimals"]);
+  assert.deepEqual(UNIFIED_ASSET_FIELDS, [
+    "schema_version",
+    "asset_id",
+    "asset_type",
+    "chain_asset_ref",
+    "decimals",
+    "settlement_class",
+    "risk_flags",
+    "metadata_ref"
+  ]);
+  assert.deepEqual(UNIFIED_BALANCE_FIELDS, ["account_id", "unified_asset", "quantity", "as_of"]);
+  assert.deepEqual(ASSET_POSITION_FIELDS, ["account_id", "asset_id", "available", "locked", "pending_settlement", "as_of"]);
+  assert.deepEqual(EXPOSURE_SNAPSHOT_FIELDS, [
+    "schema_version",
+    "account_id",
+    "positions",
+    "gross_exposure",
+    "net_exposure",
+    "captured_at"
   ]);
   assert.equal(PolicyDecision.ALLOW, "ALLOW");
   assert.deepEqual(Object.values(PaymentIntentState), [
