@@ -8,3 +8,4 @@ export * from "./version.js";
 export * from "./canonical.js";
 export * from "./governance.js";
 export * from "./unified-assets.js";
+export * from "./userops.js";
