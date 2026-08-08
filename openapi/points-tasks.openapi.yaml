@@ -1,0 +1,1442 @@
+openapi: 3.1.0
+info:
+  title: Ryvra Points/Tasks API
+  version: 2026-08-08.v1
+  summary: Canonical endpoint-level contract for Points/Tasks parity.
+  description: |
+    This OpenAPI document is the canonical HTTP contract for Points and Tasks reads in `protocol-core`.
+
+    Versioning and compatibility policy:
+    - API version marker is returned as `x-api-version` and `meta.api_version`.
+    - Additive changes are allowed within this version family.
+    - Breaking changes require a new version marker and migration notes.
+    - Deprecations require at least 180 days and two minor contract revisions before removal.
+    - Deprecated `page` pagination support is retained for compatibility and may be removed no earlier than 2027-02-04.
+
+    Idempotency policy:
+    - v1 is read-only (GET endpoints only), so `x-idempotency-key` is not required on current routes.
+    - Future write endpoints will require `x-idempotency-key` and will be announced in the changelog.
+  x-changelog-path: docs/api-contract-changelog.md
+  x-tracking-issue-url: https://github.com/ryvra-protocol/protocol-core/issues/new?title=Points%2FTasks%20API%20contract%20updates
+servers:
+  - url: /
+    description: Canonical paths only. Environment-specific hosts are deployment-owned.
+externalDocs:
+  description: Points/Tasks API contract changelog.
+  url: ../docs/api-contract-changelog.md
+x-compatibility-policy:
+  api_version_header: x-api-version
+  api_version_value: 2026-08-08.v1
+  deprecation_notice_minimum_days: 180
+  deprecation_notice_minimum_minor_revisions: 2
+  deprecated_page_removal_not_before: "2027-02-04"
+  changelog_path: docs/api-contract-changelog.md
+x-path-migrations:
+  deprecated_paths: []
+  notes: Canonical paths match current Points/Tasks MVP route expectations.
+tags:
+  - name: Points
+    description: Read endpoints for points entries and aggregates.
+  - name: Tasks
+    description: Read endpoints for task records and aggregates.
+  - name: Status
+    description: Service status and liveness endpoints.
+security:
+  - bearerAuth: []
+paths:
+  /points-tasks/points/entries:
+    get:
+      tags:
+        - Points
+      summary: List point entries
+      operationId: listPointEntries
+      description: |
+        Returns account-scoped point entries.
+
+        Pagination and sorting conventions:
+        - `cursor` is canonical.
+        - `limit` defaults to 50 (max 200).
+        - Deprecated `page` is translated server-side to cursor semantics while compatibility support remains active.
+        - If both `cursor` and `page` are set, `cursor` wins.
+      x-scope-requirements:
+        required:
+          - account_id
+        optional:
+          - user_id
+          - workspace_id
+      parameters:
+        - $ref: "#/components/parameters/XRequestIdHeader"
+        - $ref: "#/components/parameters/XCorrelationIdHeader"
+        - $ref: "#/components/parameters/AccountIdQuery"
+        - $ref: "#/components/parameters/UserIdQuery"
+        - $ref: "#/components/parameters/WorkspaceIdQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/EntryTypeQuery"
+        - $ref: "#/components/parameters/EntryStatusQuery"
+        - $ref: "#/components/parameters/EntrySourceQuery"
+        - $ref: "#/components/parameters/PointsSortQuery"
+        - $ref: "#/components/parameters/OccurredFromQuery"
+        - $ref: "#/components/parameters/OccurredToQuery"
+      responses:
+        "200":
+          description: Point entries returned.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/XRequestIdResponseHeader"
+            x-correlation-id:
+              $ref: "#/components/headers/XCorrelationIdResponseHeader"
+            x-api-version:
+              $ref: "#/components/headers/XApiVersionResponseHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PointEntriesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+  /points-tasks/points/summary:
+    get:
+      tags:
+        - Points
+      summary: Get points summary
+      operationId: getPointsSummary
+      description: Returns account-scoped points totals and rollups.
+      x-scope-requirements:
+        required:
+          - account_id
+        optional:
+          - user_id
+          - workspace_id
+      parameters:
+        - $ref: "#/components/parameters/XRequestIdHeader"
+        - $ref: "#/components/parameters/XCorrelationIdHeader"
+        - $ref: "#/components/parameters/AccountIdQuery"
+        - $ref: "#/components/parameters/UserIdQuery"
+        - $ref: "#/components/parameters/WorkspaceIdQuery"
+        - $ref: "#/components/parameters/WindowQuery"
+        - $ref: "#/components/parameters/OccurredFromQuery"
+        - $ref: "#/components/parameters/OccurredToQuery"
+      responses:
+        "200":
+          description: Points summary returned.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/XRequestIdResponseHeader"
+            x-correlation-id:
+              $ref: "#/components/headers/XCorrelationIdResponseHeader"
+            x-api-version:
+              $ref: "#/components/headers/XApiVersionResponseHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PointSummaryResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+  /points-tasks/points/overview:
+    get:
+      tags:
+        - Points
+      summary: Get points overview
+      operationId: getPointsOverview
+      description: Returns account-scoped high-level points metrics and trends.
+      x-scope-requirements:
+        required:
+          - account_id
+        optional:
+          - user_id
+          - workspace_id
+      parameters:
+        - $ref: "#/components/parameters/XRequestIdHeader"
+        - $ref: "#/components/parameters/XCorrelationIdHeader"
+        - $ref: "#/components/parameters/AccountIdQuery"
+        - $ref: "#/components/parameters/UserIdQuery"
+        - $ref: "#/components/parameters/WorkspaceIdQuery"
+        - $ref: "#/components/parameters/WindowQuery"
+      responses:
+        "200":
+          description: Points overview returned.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/XRequestIdResponseHeader"
+            x-correlation-id:
+              $ref: "#/components/headers/XCorrelationIdResponseHeader"
+            x-api-version:
+              $ref: "#/components/headers/XApiVersionResponseHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PointOverviewResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+  /points-tasks/tasks:
+    get:
+      tags:
+        - Tasks
+      summary: List tasks
+      operationId: listTasks
+      description: |
+        Returns account-scoped task records.
+
+        Pagination and sorting conventions:
+        - `cursor` is canonical.
+        - `limit` defaults to 50 (max 200).
+        - Deprecated `page` is translated server-side to cursor semantics while compatibility support remains active.
+        - If both `cursor` and `page` are set, `cursor` wins.
+      x-scope-requirements:
+        required:
+          - account_id
+        optional:
+          - user_id
+          - workspace_id
+      parameters:
+        - $ref: "#/components/parameters/XRequestIdHeader"
+        - $ref: "#/components/parameters/XCorrelationIdHeader"
+        - $ref: "#/components/parameters/AccountIdQuery"
+        - $ref: "#/components/parameters/UserIdQuery"
+        - $ref: "#/components/parameters/WorkspaceIdQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/TaskTypeQuery"
+        - $ref: "#/components/parameters/TaskStatusQuery"
+        - $ref: "#/components/parameters/TaskProgressStateQuery"
+        - $ref: "#/components/parameters/TaskSortQuery"
+        - $ref: "#/components/parameters/DueAfterQuery"
+        - $ref: "#/components/parameters/DueBeforeQuery"
+      responses:
+        "200":
+          description: Task records returned.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/XRequestIdResponseHeader"
+            x-correlation-id:
+              $ref: "#/components/headers/XCorrelationIdResponseHeader"
+            x-api-version:
+              $ref: "#/components/headers/XApiVersionResponseHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+  /points-tasks/tasks/summary:
+    get:
+      tags:
+        - Tasks
+      summary: Get task summary
+      operationId: getTaskSummary
+      description: Returns account-scoped task status/progress aggregates.
+      x-scope-requirements:
+        required:
+          - account_id
+        optional:
+          - user_id
+          - workspace_id
+      parameters:
+        - $ref: "#/components/parameters/XRequestIdHeader"
+        - $ref: "#/components/parameters/XCorrelationIdHeader"
+        - $ref: "#/components/parameters/AccountIdQuery"
+        - $ref: "#/components/parameters/UserIdQuery"
+        - $ref: "#/components/parameters/WorkspaceIdQuery"
+      responses:
+        "200":
+          description: Task summary returned.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/XRequestIdResponseHeader"
+            x-correlation-id:
+              $ref: "#/components/headers/XCorrelationIdResponseHeader"
+            x-api-version:
+              $ref: "#/components/headers/XApiVersionResponseHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskSummaryResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+  /points-tasks/tasks/overview:
+    get:
+      tags:
+        - Tasks
+      summary: Get task overview
+      operationId: getTaskOverview
+      description: Returns account-scoped task throughput and risk indicators.
+      x-scope-requirements:
+        required:
+          - account_id
+        optional:
+          - user_id
+          - workspace_id
+      parameters:
+        - $ref: "#/components/parameters/XRequestIdHeader"
+        - $ref: "#/components/parameters/XCorrelationIdHeader"
+        - $ref: "#/components/parameters/AccountIdQuery"
+        - $ref: "#/components/parameters/UserIdQuery"
+        - $ref: "#/components/parameters/WorkspaceIdQuery"
+        - $ref: "#/components/parameters/WindowQuery"
+      responses:
+        "200":
+          description: Task overview returned.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/XRequestIdResponseHeader"
+            x-correlation-id:
+              $ref: "#/components/headers/XCorrelationIdResponseHeader"
+            x-api-version:
+              $ref: "#/components/headers/XApiVersionResponseHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskOverviewResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+  /points-tasks/status:
+    get:
+      tags:
+        - Status
+      summary: Get Points/Tasks service status
+      operationId: getPointsTasksStatus
+      description: |
+        Returns authenticated service status and dependency health summary.
+        Scope fields are optional and can be used for scoped diagnostics.
+      x-scope-requirements:
+        required: []
+        optional:
+          - account_id
+          - user_id
+          - workspace_id
+      parameters:
+        - $ref: "#/components/parameters/XRequestIdHeader"
+        - $ref: "#/components/parameters/XCorrelationIdHeader"
+        - $ref: "#/components/parameters/OptionalAccountIdQuery"
+        - $ref: "#/components/parameters/UserIdQuery"
+        - $ref: "#/components/parameters/WorkspaceIdQuery"
+      responses:
+        "200":
+          description: Service status returned.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/XRequestIdResponseHeader"
+            x-correlation-id:
+              $ref: "#/components/headers/XCorrelationIdResponseHeader"
+            x-api-version:
+              $ref: "#/components/headers/XApiVersionResponseHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+  /points-tasks/status/health:
+    get:
+      tags:
+        - Status
+      summary: Health check endpoint
+      operationId: getPointsTasksHealth
+      description: Canonical liveness/readiness endpoint.
+      security: []
+      x-scope-requirements:
+        required: []
+        optional: []
+      parameters:
+        - $ref: "#/components/parameters/XRequestIdHeader"
+      responses:
+        "200":
+          description: Service is healthy.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/XRequestIdResponseHeader"
+            x-api-version:
+              $ref: "#/components/headers/XApiVersionResponseHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailableError"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  headers:
+    XRequestIdResponseHeader:
+      description: Request identifier generated or echoed by the API.
+      schema:
+        type: string
+    XCorrelationIdResponseHeader:
+      description: Correlation identifier echoed by the API when provided.
+      schema:
+        type: string
+    XApiVersionResponseHeader:
+      description: Canonical API contract version marker.
+      schema:
+        $ref: "#/components/schemas/ApiVersion"
+  parameters:
+    XRequestIdHeader:
+      name: x-request-id
+      in: header
+      required: false
+      description: |
+        Optional caller-provided request id for tracing.
+        The server always returns `x-request-id` in responses.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+    XCorrelationIdHeader:
+      name: x-correlation-id
+      in: header
+      required: false
+      description: Optional correlation id for cross-service tracing.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+    AccountIdQuery:
+      name: account_id
+      in: query
+      required: true
+      description: Canonical account scope identifier.
+      schema:
+        type: string
+        minLength: 1
+    OptionalAccountIdQuery:
+      name: account_id
+      in: query
+      required: false
+      description: Optional account scope identifier used for scoped diagnostics.
+      schema:
+        type: string
+        minLength: 1
+    UserIdQuery:
+      name: user_id
+      in: query
+      required: false
+      description: Optional user scope within the account.
+      schema:
+        type: string
+        minLength: 1
+    WorkspaceIdQuery:
+      name: workspace_id
+      in: query
+      required: false
+      description: Optional workspace scope within the account.
+      schema:
+        type: string
+        minLength: 1
+    CursorQuery:
+      name: cursor
+      in: query
+      required: false
+      description: Opaque cursor returned by a previous page response.
+      schema:
+        type: string
+        minLength: 1
+    LimitQuery:
+      name: limit
+      in: query
+      required: false
+      description: Page size for cursor pagination.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 50
+    PageQuery:
+      name: page
+      in: query
+      required: false
+      deprecated: true
+      description: Deprecated page-number pagination compatibility parameter.
+      schema:
+        type: integer
+        minimum: 1
+    WindowQuery:
+      name: window
+      in: query
+      required: false
+      description: Aggregation window.
+      schema:
+        type: string
+        enum:
+          - 24h
+          - 7d
+          - 30d
+          - 90d
+          - custom
+        default: 30d
+    OccurredFromQuery:
+      name: occurred_from
+      in: query
+      required: false
+      description: Inclusive lower timestamp bound (ISO 8601).
+      schema:
+        type: string
+        format: date-time
+    OccurredToQuery:
+      name: occurred_to
+      in: query
+      required: false
+      description: Exclusive upper timestamp bound (ISO 8601).
+      schema:
+        type: string
+        format: date-time
+    EntryTypeQuery:
+      name: entry_type
+      in: query
+      required: false
+      description: Filter by point entry type.
+      schema:
+        $ref: "#/components/schemas/PointEntryType"
+    EntryStatusQuery:
+      name: entry_status
+      in: query
+      required: false
+      description: Filter by point entry status.
+      schema:
+        $ref: "#/components/schemas/PointEntryStatus"
+    EntrySourceQuery:
+      name: entry_source
+      in: query
+      required: false
+      description: Filter by point entry source.
+      schema:
+        $ref: "#/components/schemas/PointEntrySource"
+    PointsSortQuery:
+      name: sort
+      in: query
+      required: false
+      description: Sort order for points entries.
+      schema:
+        type: string
+        enum:
+          - "occurred_at:desc"
+          - "occurred_at:asc"
+          - "created_at:desc"
+          - "created_at:asc"
+        default: "occurred_at:desc"
+    TaskTypeQuery:
+      name: task_type
+      in: query
+      required: false
+      description: Filter by task type.
+      schema:
+        $ref: "#/components/schemas/TaskType"
+    TaskStatusQuery:
+      name: task_status
+      in: query
+      required: false
+      description: Filter by task status.
+      schema:
+        $ref: "#/components/schemas/TaskStatus"
+    TaskProgressStateQuery:
+      name: progress_state
+      in: query
+      required: false
+      description: Filter by task progress state.
+      schema:
+        $ref: "#/components/schemas/TaskProgressState"
+    TaskSortQuery:
+      name: sort
+      in: query
+      required: false
+      description: Sort order for task listings.
+      schema:
+        type: string
+        enum:
+          - "updated_at:desc"
+          - "updated_at:asc"
+          - "created_at:desc"
+          - "created_at:asc"
+          - "due_at:asc"
+          - "due_at:desc"
+        default: "updated_at:desc"
+    DueAfterQuery:
+      name: due_after
+      in: query
+      required: false
+      description: Filter tasks due on/after this timestamp.
+      schema:
+        type: string
+        format: date-time
+    DueBeforeQuery:
+      name: due_before
+      in: query
+      required: false
+      description: Filter tasks due before this timestamp.
+      schema:
+        type: string
+        format: date-time
+  responses:
+    BadRequestError:
+      description: Request validation failed.
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/XRequestIdResponseHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    UnauthorizedError:
+      description: Authentication credentials are missing or invalid.
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/XRequestIdResponseHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ForbiddenError:
+      description: Caller lacks required scope permissions.
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/XRequestIdResponseHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    TooManyRequestsError:
+      description: Rate limit exceeded.
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/XRequestIdResponseHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ServiceUnavailableError:
+      description: Service or dependency temporarily unavailable.
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/XRequestIdResponseHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    InternalError:
+      description: Unhandled internal server error.
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/XRequestIdResponseHeader"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+  schemas:
+    ApiVersion:
+      type: string
+      enum:
+        - 2026-08-08.v1
+      description: Canonical Points/Tasks API version marker.
+    ErrorCode:
+      type: string
+      enum:
+        - invalid_request
+        - unauthorized
+        - forbidden
+        - not_found
+        - conflict
+        - rate_limited
+        - upstream_unavailable
+        - internal_error
+    ErrorSource:
+      type: string
+      enum:
+        - points_tasks_api
+        - tasks_engine
+        - policy_risk
+        - ledger_settlement
+        - pay
+        - governance
+        - unknown
+    ErrorEnvelope:
+      type: object
+      required:
+        - code
+        - message
+        - retryable
+        - source
+      properties:
+        code:
+          $ref: "#/components/schemas/ErrorCode"
+        message:
+          type: string
+        retryable:
+          type: boolean
+        source:
+          $ref: "#/components/schemas/ErrorSource"
+        details:
+          oneOf:
+            - type: object
+              additionalProperties: true
+            - type: array
+              items: {}
+            - type: string
+          description: Optional error metadata.
+        request_id:
+          type: string
+        correlation_id:
+          type: string
+      additionalProperties: false
+    ScopeContext:
+      type: object
+      required:
+        - account_id
+      properties:
+        account_id:
+          type: string
+        user_id:
+          type:
+            - string
+            - "null"
+        workspace_id:
+          type:
+            - string
+            - "null"
+      additionalProperties: false
+    ResponseMeta:
+      type: object
+      required:
+        - api_version
+        - generated_at
+        - scope
+      properties:
+        api_version:
+          $ref: "#/components/schemas/ApiVersion"
+        generated_at:
+          type: string
+          format: date-time
+        scope:
+          $ref: "#/components/schemas/ScopeContext"
+        deprecated_page:
+          type:
+            - object
+            - "null"
+          required:
+            - page
+            - translated_to_cursor
+            - removal_not_before
+          properties:
+            page:
+              type: integer
+              minimum: 1
+            translated_to_cursor:
+              type: string
+            removal_not_before:
+              type: string
+              format: date
+          additionalProperties: false
+      additionalProperties: false
+    CursorPage:
+      type: object
+      required:
+        - limit
+        - has_more
+      properties:
+        next_cursor:
+          type:
+            - string
+            - "null"
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 200
+        has_more:
+          type: boolean
+      additionalProperties: false
+    PointEntryType:
+      type: string
+      enum:
+        - transaction_reward
+        - task_completion_bonus
+        - referral_bonus
+        - manual_adjustment
+        - penalty
+        - reversal
+    PointEntryStatus:
+      type: string
+      enum:
+        - pending
+        - confirmed
+        - rejected
+        - reversed
+        - expired
+    PointEntrySource:
+      type: string
+      enum:
+        - ledger_settlement
+        - policy_risk
+        - tasks_engine
+        - admin_console
+        - system_migration
+    PointEntry:
+      type: object
+      required:
+        - entry_id
+        - account_id
+        - entry_type
+        - entry_status
+        - entry_source
+        - points_delta
+        - occurred_at
+        - created_at
+      properties:
+        entry_id:
+          type: string
+        account_id:
+          type: string
+        user_id:
+          type:
+            - string
+            - "null"
+        workspace_id:
+          type:
+            - string
+            - "null"
+        task_id:
+          type:
+            - string
+            - "null"
+        ledger_event_id:
+          type:
+            - string
+            - "null"
+        reference_id:
+          type:
+            - string
+            - "null"
+        entry_type:
+          $ref: "#/components/schemas/PointEntryType"
+        entry_status:
+          $ref: "#/components/schemas/PointEntryStatus"
+        entry_source:
+          $ref: "#/components/schemas/PointEntrySource"
+        points_delta:
+          type: number
+          format: double
+        points_balance_after:
+          type:
+            - number
+            - "null"
+          format: double
+        occurred_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        metadata:
+          type:
+            - object
+            - "null"
+          additionalProperties: true
+      additionalProperties: false
+    PointTypeAggregate:
+      type: object
+      required:
+        - entry_type
+        - entries
+        - points_total
+      properties:
+        entry_type:
+          $ref: "#/components/schemas/PointEntryType"
+        entries:
+          type: integer
+          minimum: 0
+        points_total:
+          type: number
+          format: double
+      additionalProperties: false
+    PointStatusAggregate:
+      type: object
+      required:
+        - entry_status
+        - entries
+        - points_total
+      properties:
+        entry_status:
+          $ref: "#/components/schemas/PointEntryStatus"
+        entries:
+          type: integer
+          minimum: 0
+        points_total:
+          type: number
+          format: double
+      additionalProperties: false
+    PointSourceAggregate:
+      type: object
+      required:
+        - entry_source
+        - entries
+        - points_total
+      properties:
+        entry_source:
+          $ref: "#/components/schemas/PointEntrySource"
+        entries:
+          type: integer
+          minimum: 0
+        points_total:
+          type: number
+          format: double
+      additionalProperties: false
+    PointSummary:
+      type: object
+      required:
+        - account_id
+        - window_start
+        - window_end
+        - total_points
+        - available_points
+        - pending_points
+        - reversed_points
+        - entry_count
+        - by_type
+        - by_status
+        - by_source
+      properties:
+        account_id:
+          type: string
+        window_start:
+          type: string
+          format: date-time
+        window_end:
+          type: string
+          format: date-time
+        total_points:
+          type: number
+          format: double
+        available_points:
+          type: number
+          format: double
+        pending_points:
+          type: number
+          format: double
+        reversed_points:
+          type: number
+          format: double
+        entry_count:
+          type: integer
+          minimum: 0
+        by_type:
+          type: array
+          items:
+            $ref: "#/components/schemas/PointTypeAggregate"
+        by_status:
+          type: array
+          items:
+            $ref: "#/components/schemas/PointStatusAggregate"
+        by_source:
+          type: array
+          items:
+            $ref: "#/components/schemas/PointSourceAggregate"
+      additionalProperties: false
+    PointTrendBucket:
+      type: object
+      required:
+        - bucket_start
+        - bucket_end
+        - points_earned
+        - entries
+      properties:
+        bucket_start:
+          type: string
+          format: date-time
+        bucket_end:
+          type: string
+          format: date-time
+        points_earned:
+          type: number
+          format: double
+        entries:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+    PointOverview:
+      type: object
+      required:
+        - account_id
+        - window_start
+        - window_end
+        - current_balance
+        - lifetime_points
+        - entries_last_24h
+        - points_last_24h
+        - trend
+      properties:
+        account_id:
+          type: string
+        window_start:
+          type: string
+          format: date-time
+        window_end:
+          type: string
+          format: date-time
+        current_balance:
+          type: number
+          format: double
+        lifetime_points:
+          type: number
+          format: double
+        entries_last_24h:
+          type: integer
+          minimum: 0
+        points_last_24h:
+          type: number
+          format: double
+        trend:
+          type: array
+          items:
+            $ref: "#/components/schemas/PointTrendBucket"
+      additionalProperties: false
+    PointEntriesResponse:
+      type: object
+      required:
+        - data
+        - page
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/PointEntry"
+        page:
+          $ref: "#/components/schemas/CursorPage"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+      additionalProperties: false
+    PointSummaryResponse:
+      type: object
+      required:
+        - summary
+        - meta
+      properties:
+        summary:
+          $ref: "#/components/schemas/PointSummary"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+      additionalProperties: false
+    PointOverviewResponse:
+      type: object
+      required:
+        - overview
+        - meta
+      properties:
+        overview:
+          $ref: "#/components/schemas/PointOverview"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+      additionalProperties: false
+    TaskType:
+      type: string
+      enum:
+        - onboarding
+        - transaction_volume
+        - referral
+        - governance
+        - security
+        - ecosystem
+        - custom
+    TaskStatus:
+      type: string
+      enum:
+        - not_started
+        - eligible
+        - in_progress
+        - completed
+        - failed
+        - expired
+        - canceled
+    TaskProgressState:
+      type: string
+      enum:
+        - queued
+        - active
+        - blocked
+        - under_review
+        - done
+    Task:
+      type: object
+      required:
+        - task_id
+        - account_id
+        - task_type
+        - task_status
+        - progress_state
+        - title
+        - progress_percent
+        - points_reward
+        - created_at
+        - updated_at
+      properties:
+        task_id:
+          type: string
+        account_id:
+          type: string
+        user_id:
+          type:
+            - string
+            - "null"
+        workspace_id:
+          type:
+            - string
+            - "null"
+        task_type:
+          $ref: "#/components/schemas/TaskType"
+        task_status:
+          $ref: "#/components/schemas/TaskStatus"
+        progress_state:
+          $ref: "#/components/schemas/TaskProgressState"
+        title:
+          type: string
+        description:
+          type:
+            - string
+            - "null"
+        progress_percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        points_reward:
+          type: number
+          format: double
+        due_at:
+          type:
+            - string
+            - "null"
+          format: date-time
+        started_at:
+          type:
+            - string
+            - "null"
+          format: date-time
+        completed_at:
+          type:
+            - string
+            - "null"
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      additionalProperties: false
+    TaskStatusAggregate:
+      type: object
+      required:
+        - task_status
+        - count
+      properties:
+        task_status:
+          $ref: "#/components/schemas/TaskStatus"
+        count:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+    TaskProgressAggregate:
+      type: object
+      required:
+        - progress_state
+        - count
+      properties:
+        progress_state:
+          $ref: "#/components/schemas/TaskProgressState"
+        count:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+    TaskSummary:
+      type: object
+      required:
+        - account_id
+        - total_tasks
+        - completed_tasks
+        - in_progress_tasks
+        - overdue_tasks
+        - by_status
+        - by_progress_state
+      properties:
+        account_id:
+          type: string
+        total_tasks:
+          type: integer
+          minimum: 0
+        completed_tasks:
+          type: integer
+          minimum: 0
+        in_progress_tasks:
+          type: integer
+          minimum: 0
+        overdue_tasks:
+          type: integer
+          minimum: 0
+        by_status:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskStatusAggregate"
+        by_progress_state:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskProgressAggregate"
+      additionalProperties: false
+    TaskOverviewItem:
+      type: object
+      required:
+        - task_id
+        - task_type
+        - task_status
+        - progress_state
+        - progress_percent
+      properties:
+        task_id:
+          type: string
+        task_type:
+          $ref: "#/components/schemas/TaskType"
+        task_status:
+          $ref: "#/components/schemas/TaskStatus"
+        progress_state:
+          $ref: "#/components/schemas/TaskProgressState"
+        progress_percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+      additionalProperties: false
+    TaskOverview:
+      type: object
+      required:
+        - account_id
+        - window_start
+        - window_end
+        - completion_rate
+        - tasks_created
+        - tasks_completed
+        - recently_completed
+        - at_risk
+      properties:
+        account_id:
+          type: string
+        window_start:
+          type: string
+          format: date-time
+        window_end:
+          type: string
+          format: date-time
+        completion_rate:
+          type: number
+          format: double
+        tasks_created:
+          type: integer
+          minimum: 0
+        tasks_completed:
+          type: integer
+          minimum: 0
+        recently_completed:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskOverviewItem"
+        at_risk:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskOverviewItem"
+      additionalProperties: false
+    TaskListResponse:
+      type: object
+      required:
+        - data
+        - page
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        page:
+          $ref: "#/components/schemas/CursorPage"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+      additionalProperties: false
+    TaskSummaryResponse:
+      type: object
+      required:
+        - summary
+        - meta
+      properties:
+        summary:
+          $ref: "#/components/schemas/TaskSummary"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+      additionalProperties: false
+    TaskOverviewResponse:
+      type: object
+      required:
+        - overview
+        - meta
+      properties:
+        overview:
+          $ref: "#/components/schemas/TaskOverview"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+      additionalProperties: false
+    ServiceStatus:
+      type: string
+      enum:
+        - ok
+        - degraded
+        - maintenance
+    ComponentStatus:
+      type: string
+      enum:
+        - ok
+        - degraded
+        - down
+    StatusComponent:
+      type: object
+      required:
+        - name
+        - status
+        - checked_at
+      properties:
+        name:
+          type: string
+        status:
+          $ref: "#/components/schemas/ComponentStatus"
+        checked_at:
+          type: string
+          format: date-time
+        latency_ms:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+      additionalProperties: false
+    StatusResponse:
+      type: object
+      required:
+        - service
+        - status
+        - timestamp
+        - api_version
+        - auth_required
+        - components
+      properties:
+        service:
+          type: string
+          enum:
+            - points-tasks
+        status:
+          $ref: "#/components/schemas/ServiceStatus"
+        timestamp:
+          type: string
+          format: date-time
+        api_version:
+          $ref: "#/components/schemas/ApiVersion"
+        auth_required:
+          type: boolean
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusComponent"
+      additionalProperties: false
+    HealthStatus:
+      type: string
+      enum:
+        - ok
+        - degraded
+        - down
+    HealthResponse:
+      type: object
+      required:
+        - service
+        - status
+        - timestamp
+        - api_version
+        - uptime_seconds
+      properties:
+        service:
+          type: string
+          enum:
+            - points-tasks
+        status:
+          $ref: "#/components/schemas/HealthStatus"
+        timestamp:
+          type: string
+          format: date-time
+        api_version:
+          $ref: "#/components/schemas/ApiVersion"
+        uptime_seconds:
+          type: integer
+          minimum: 0
+        checks:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusComponent"
+      additionalProperties: false

@@ -50,6 +50,12 @@ Ryvra Protocol Core is organized around four cooperating layers:
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) — contribution standards and RFC-first changes
 - [`SECURITY.md`](./SECURITY.md) — responsible disclosure process
 
+## API Contracts
+
+- [`openapi/points-tasks.openapi.yaml`](./openapi/points-tasks.openapi.yaml) — canonical Points/Tasks endpoint contract (paths, schemas, auth/header/scope requirements, enum sets, and compatibility policy).
+- [`docs/api-contract-changelog.md`](./docs/api-contract-changelog.md) — contract changelog, version marker history, and deprecation/removal windows.
+- Validation command: `pnpm lint:openapi` (enforced in CI).
+
 ## RFC Index
 
 - RFC-0001: AA + Unified Assets Core (production baseline) — [link](./docs/rfc-0001-aa-unified-assets.md)

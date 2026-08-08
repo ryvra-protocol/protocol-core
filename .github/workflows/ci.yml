@@ -35,12 +35,16 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Lint markdown
         run: pnpm lint
+      - name: Validate OpenAPI contract
+        run: pnpm lint:openapi
       - name: Verify required rollout docs
         run: |
           set -euo pipefail
           test -f CHANGELOG.md
+          test -f openapi/points-tasks.openapi.yaml
           test -f docs/release-candidate.md
           test -f docs/compatibility-matrix.md
+          test -f docs/api-contract-changelog.md
           test -f docs/staging-http-mode-verification.md
           test -f docs/production-cutover-runbook.md
           test -f docs/rollback-runbook.md
