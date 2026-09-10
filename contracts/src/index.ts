@@ -10,3 +10,4 @@ export * from "./governance.js";
 export * from "./unified-assets.js";
 export * from "./aa4337.js";
 export * from "./userop-events.js";
+export * from "./programmable-authority.js";

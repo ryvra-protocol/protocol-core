@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 
 import {
   ASSET_POSITION_FIELDS,
+  AUTHORIZATION_CONTEXT_FIELDS,
+  ActorType,
   BUNDLER_REF_FIELDS,
   CANONICAL_EVENT_ENVELOPE_FIELDS,
   CANONICAL_AMOUNT_FIELDS,
@@ -10,7 +12,10 @@ import {
   CHAIN_ASSET_REF_FIELDS,
   CONTRACT_SCHEMA_VERSION,
   ENTRY_POINT_REF_FIELDS,
+  EXECUTION_CONTEXT_FIELDS,
   EXPOSURE_SNAPSHOT_FIELDS,
+  FINANCIAL_INTENT_FIELDS,
+  IntentAction,
   OrderMarketState,
   PAYMASTER_REF_FIELDS,
   PaymentIntentState,
@@ -18,6 +23,7 @@ import {
   PR8_ERC4337_SCHEMA_VERSION,
   PR7_UNIFIED_ASSET_SCHEMA_VERSION,
   PolicyDecision,
+  RISK_CONTEXT_FIELDS,
   SMART_ACCOUNT_REF_FIELDS,
   SPONSORSHIP_POLICY_DECISION_FIELDS,
   SPONSORSHIP_POLICY_INPUT_FIELDS,
@@ -38,6 +44,8 @@ import {
   USER_OPERATION_SIMULATION_RESULT_FIELDS,
   USER_OPERATION_SUBMITTED_PAYLOAD_FIELDS,
   UserOperationSimulationOutcome,
+  isIdempotencyCorrelationConsistent,
+  validateAuthorizationMandateLinkage,
   validatePolicyDecisionOutput,
   validatePolicyReasonCodes,
   categorizePolicyReasonCode
@@ -197,7 +205,68 @@ test("contracts compile and expose canonical vocabulary", () => {
     "confirmations",
     "finalized_at"
   ]);
+  assert.deepEqual(FINANCIAL_INTENT_FIELDS, [
+    "intentId",
+    "actorType",
+    "actorId",
+    "action",
+    "assetId",
+    "amount",
+    "chainId",
+    "recipient",
+    "venue",
+    "purpose",
+    "mandateId",
+    "policyVersion",
+    "correlationId",
+    "idempotencyKey",
+    "expiresAt",
+    "intentHash"
+  ]);
+  assert.deepEqual(AUTHORIZATION_CONTEXT_FIELDS, [
+    "authorizationId",
+    "intentId",
+    "mandateId",
+    "policyVersion",
+    "decision",
+    "reasonCode",
+    "approvedBy",
+    "approvedAt",
+    "authorizationHash"
+  ]);
+  assert.deepEqual(RISK_CONTEXT_FIELDS, [
+    "riskAssessmentId",
+    "riskTier",
+    "score",
+    "factors",
+    "decision",
+    "assessedAt",
+    "riskHash"
+  ]);
+  assert.deepEqual(EXECUTION_CONTEXT_FIELDS, [
+    "intentId",
+    "actorId",
+    "mandateId",
+    "capabilityId",
+    "sessionKeyId",
+    "chainId",
+    "targetContract",
+    "functionSelector",
+    "nonceDomain",
+    "executionHash"
+  ]);
   assert.equal(PolicyDecision.ALLOW, "ALLOW");
+  assert.deepEqual(Object.values(ActorType), ["USER", "APPLICATION", "SYSTEM", "AGENT"]);
+  assert.deepEqual(Object.values(IntentAction), [
+    "PAY",
+    "TRANSFER",
+    "SWAP",
+    "TRADE",
+    "REBALANCE",
+    "COLLECT",
+    "OPEN_POSITION",
+    "CLOSE_POSITION"
+  ]);
   assert.deepEqual(Object.values(UserOperationLifecycleStatus), [
     "submitted",
     "simulated",
@@ -250,6 +319,20 @@ test("contracts compile and expose canonical vocabulary", () => {
   assert.equal(SettlementState.reconciled, "reconciled");
   assert.equal(validatePolicyReasonCodes(["DUPLICATE_REFERENCE_REPLAY"]), true);
   assert.equal(categorizePolicyReasonCode("DUPLICATE_REFERENCE_REPLAY"), "DUPLICATE_REFERENCE_");
+  assert.equal(
+    isIdempotencyCorrelationConsistent({
+      correlationId: "corr-1",
+      idempotencyKey: "corr-1:req-1"
+    }),
+    true
+  );
+  assert.equal(
+    validateAuthorizationMandateLinkage(
+      { mandateId: "mandate-1" },
+      { mandateId: "mandate-1" }
+    ),
+    true
+  );
   assert.equal(
     validatePolicyDecisionOutput({
       decision: PolicyDecision.DENY,

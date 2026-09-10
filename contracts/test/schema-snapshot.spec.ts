@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 
 import {
   ASSET_POSITION_FIELDS,
+  AUTHORIZATION_CONTEXT_FIELDS,
+  ActorType,
   BUNDLER_REF_FIELDS,
   CANONICAL_EVENT_ENVELOPE_FIELDS,
   CANONICAL_AMOUNT_FIELDS,
@@ -13,11 +15,15 @@ import {
   CHAIN_ASSET_REF_FIELDS,
   CONTRACT_SCHEMA_VERSION,
   ENTRY_POINT_REF_FIELDS,
+  EXECUTION_CONTEXT_FIELDS,
   EXPOSURE_SNAPSHOT_FIELDS,
+  FINANCIAL_INTENT_FIELDS,
+  IntentAction,
   PAYMASTER_REF_FIELDS,
   POLICY_REASON_CODES_VERSION,
   PR7_UNIFIED_ASSET_SCHEMA_VERSION,
   PR8_ERC4337_SCHEMA_VERSION,
+  RISK_CONTEXT_FIELDS,
   SMART_ACCOUNT_REF_FIELDS,
   SPONSORSHIP_POLICY_DECISION_FIELDS,
   SPONSORSHIP_POLICY_INPUT_FIELDS,
@@ -62,7 +68,8 @@ test("schema snapshot is deterministic", async () => {
       "./governance.js",
       "./unified-assets.js",
       "./aa4337.js",
-      "./userop-events.js"
+      "./userop-events.js",
+      "./programmable-authority.js"
     ],
     canonicalFields: {
       CANONICAL_ID_FIELDS,
@@ -87,11 +94,17 @@ test("schema snapshot is deterministic", async () => {
       USER_OPERATION_SIMULATED_PAYLOAD_FIELDS,
       USER_OPERATION_INCLUDED_PAYLOAD_FIELDS,
       USER_OPERATION_FAILED_PAYLOAD_FIELDS,
-      USER_OPERATION_FINALIZED_PAYLOAD_FIELDS
+      USER_OPERATION_FINALIZED_PAYLOAD_FIELDS,
+      FINANCIAL_INTENT_FIELDS,
+      AUTHORIZATION_CONTEXT_FIELDS,
+      RISK_CONTEXT_FIELDS,
+      EXECUTION_CONTEXT_FIELDS
     },
     enumValues: {
       UserOperationLifecycleStatus: Object.values(UserOperationLifecycleStatus),
-      UserOperationSimulationOutcome: Object.values(UserOperationSimulationOutcome)
+      UserOperationSimulationOutcome: Object.values(UserOperationSimulationOutcome),
+      ActorType: Object.values(ActorType),
+      IntentAction: Object.values(IntentAction)
     }
   };
 
