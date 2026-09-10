@@ -19,7 +19,8 @@
     "./governance.js",
     "./unified-assets.js",
     "./aa4337.js",
-    "./userop-events.js"
+    "./userop-events.js",
+    "./programmable-authority.js"
   ],
   "changePolicy": {
     "patch": "No export-surface or field-shape changes; bug fixes and docs only.",

@@ -17,7 +17,8 @@
     "./governance.js",
     "./unified-assets.js",
     "./aa4337.js",
-    "./userop-events.js"
+    "./userop-events.js",
+    "./programmable-authority.js"
   ],
   "canonicalFields": {
     "CANONICAL_ID_FIELDS": [
@@ -206,6 +207,56 @@
       "finalized_block_number",
       "confirmations",
       "finalized_at"
+    ],
+    "FINANCIAL_INTENT_FIELDS": [
+      "intentId",
+      "actorType",
+      "actorId",
+      "action",
+      "assetId",
+      "amount",
+      "chainId",
+      "recipient",
+      "venue",
+      "purpose",
+      "mandateId",
+      "policyVersion",
+      "correlationId",
+      "idempotencyKey",
+      "expiresAt",
+      "intentHash"
+    ],
+    "AUTHORIZATION_CONTEXT_FIELDS": [
+      "authorizationId",
+      "intentId",
+      "mandateId",
+      "policyVersion",
+      "decision",
+      "reasonCode",
+      "approvedBy",
+      "approvedAt",
+      "authorizationHash"
+    ],
+    "RISK_CONTEXT_FIELDS": [
+      "riskAssessmentId",
+      "riskTier",
+      "score",
+      "factors",
+      "decision",
+      "assessedAt",
+      "riskHash"
+    ],
+    "EXECUTION_CONTEXT_FIELDS": [
+      "intentId",
+      "actorId",
+      "mandateId",
+      "capabilityId",
+      "sessionKeyId",
+      "chainId",
+      "targetContract",
+      "functionSelector",
+      "nonceDomain",
+      "executionHash"
     ]
   },
   "enumValues": {
@@ -226,6 +277,22 @@
       "malformed",
       "throttled",
       "internal_error"
+    ],
+    "ActorType": [
+      "USER",
+      "APPLICATION",
+      "SYSTEM",
+      "AGENT"
+    ],
+    "IntentAction": [
+      "PAY",
+      "TRANSFER",
+      "SWAP",
+      "TRADE",
+      "REBALANCE",
+      "COLLECT",
+      "OPEN_POSITION",
+      "CLOSE_POSITION"
     ]
   }
 }

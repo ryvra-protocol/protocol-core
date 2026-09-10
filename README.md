@@ -61,6 +61,34 @@ Ryvra Protocol Core is organized around four cooperating layers:
 - RFC-0001: AA + Unified Assets Core (production baseline) — [link](./docs/rfc-0001-aa-unified-assets.md)
 - RFC-0002: APIs and SDK Surface (reserved for ratified publication)
 - RFC-0003: PoT Scoring Parameters (reserved for ratified publication)
+- RFC-0005: Programmable Financial Authority Foundations — [link](./docs/programmable-authority-types.md)
+
+## RFC-0005 Canonical Programmable Authority Types
+
+Canonical additive contract types are exported from `@ryvra/contracts` in `programmable-authority`:
+
+- Identity and actor: `ActorType`, `AgentIdentity`
+- Authority primitives: `Mandate`, `AgentCapability`
+- Intent model: `FinancialIntent`, `IntentAction`
+- Context models: `AuthorizationContext`, `RiskContext`, `ExecutionContext`
+- Provenance and reservation: `Provenance`, `Reservation`
+- Confidential forward-compatibility: `ConfidentialIntent`, `ConfidentialExecution`
+
+### RFC-0005 Mapping Table
+
+| RFC-0005 requirement | Canonical type(s) |
+| --- | --- |
+| Identity & actor authority boundary | `ActorType`, `AgentIdentity`, `AuthorizationApproval` |
+| Mandates and delegated capability scope | `Mandate`, `AgentCapability` |
+| Deterministic intent contract | `FinancialIntent`, `IntentAction` |
+| Authorization/risk/execution policy context | `AuthorizationContext`, `RiskContext`, `ExecutionContext` |
+| Provenance chain from actor to settlement proof | `Provenance`, `isProvenanceChainComplete` |
+| Reservation and concurrency guardrails | `Reservation`, `ReservationStatus` |
+| Confidential intent/execution support | `ConfidentialIntent`, `ConfidentialExecution` |
+
+### End-to-End Authority Chain
+
+`actor -> mandate -> policyVersion -> riskAssessment -> intent -> authorization -> capability -> sessionKey -> userOp -> tx -> ledgerEvent -> settlement`
 
 ## Repository Baseline
 
